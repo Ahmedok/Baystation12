@@ -1,26 +1,28 @@
 //This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
 
-datum/track
+/datum/track
 	var/title
-	var/sound
+	var/track
 
-datum/track/New(var/title_name, var/audio)
-	title = title_name
-	sound = audio
+/datum/track/New(var/title, var/track)
+	src.title = title
+	src.track = track
+
+datum/track/proc/GetTrack()
+	if(ispath(track, /music_track))
+		var/music_track/music_track = decls_repository.get_decl(track)
+		return music_track.song
+	return track // Allows admins to continue their adminbus simply by overriding the track var
 
 /obj/machinery/media/jukebox
 	name = "mediatronic jukebox"
 	desc = "An immense, standalone touchscreen on a swiveling base, equipped with phased array speakers. Embossed on one corner of the ultrathin bezel is the brand name, 'Leitmotif Enterprise Edition'."
-	description_info = "Click the jukebox and then select a track on the interface. You can choose to play or stop the track, or set the volume. Use a wrench to attach or detach the jukebox to the floor. The room it is installed in must have power for it to operate!"
-	description_fluff = "The Leitmotif is Auraliving's most popular brand of retro jukebox, putting a modern spin on the ancient curved plasmascreen design. The Enterprise Edition allows an indefinite number of users to sync music from their devices simultaneously... of course the Expeditionary Corps made sure to lock down the selection before they installed this one."
-	description_antag = "Slide a cryptographic sequencer into the jukebox to overload its speakers. Instead of music, it'll produce a hellish blast of noise and explode!"
 	icon = 'icons/obj/jukebox_new.dmi'
 	icon_state = "jukebox3-nopower"
 	var/state_base = "jukebox3"
 	anchored = 1
 	density = 1
 	power_channel = EQUIP
-	use_power = 1
 	idle_power_usage = 10
 	active_power_usage = 100
 	clicksound = 'sound/machines/buttonbeep.ogg'
@@ -33,33 +35,12 @@ datum/track/New(var/title_name, var/audio)
 	var/datum/sound_token/sound_token
 
 	var/datum/track/current_track
-	var/list/datum/track/tracks = list(
-		new/datum/track("Beyond", 'sound/ambience/ambispace.ogg'),
-		new/datum/track("Clouds of Fire", 'sound/music/clouds.s3m'),
-		new/datum/track("Stage Three", 'sound/music/title2.ogg'),
-		new/datum/track("Asteroids", 'sound/ambience/song_game.ogg'),
-		new/datum/track("Floating", 'sound/music/main.ogg'),
-		new/datum/track("Endless Space", 'sound/music/space.ogg'),
-		new/datum/track("Fleet Party Theme", 'sound/misc/TestLoop1.ogg'),
-		new/datum/track("Scratch", 'sound/music/title1.ogg'),
-		new/datum/track("Absconditus", 'sound/music/traitor.ogg'),
-		new/datum/track("lasers rip apart the bulkhead", 'sound/music/lasers_rip_apart_the_bulkhead_looped.ogg'),
-		new/datum/track("Maschine Klash", 'sound/music/1.ogg'),
-		new/datum/track("Comet Halley", 'sound/music/comet_haley.ogg'),
-		new/datum/track("Please Come Back Any Time", 'sound/music/elevatormusic.ogg'),
-		new/datum/track("Human", 'sound/music/human.ogg'),
-		new/datum/track("Memories of Lysendraa", 'sound/music/lysendraa.ogg'),
-		new/datum/track("Marhaba", 'sound/music/marhaba.ogg'),
-		new/datum/track("Space Oddity", 'sound/music/space_oddity.ogg'),
-		new/datum/track("THUNDERDOME", 'sound/music/THUNDERDOME.ogg'),
-		new/datum/track("Torch: A Light in the Darkness", 'sound/music/Torch.ogg'),
-		new/datum/track("Treacherous Voyage", 'sound/music/treacherous_voyage.ogg'),
-	)
+	var/list/datum/track/tracks
+
 
 /obj/machinery/media/jukebox/old
 	name = "space jukebox"
 	desc = "A battered and hard-loved jukebox in some forgotten style, carefully restored to some semblance of working condition."
-	description_fluff = "No one these days knows what civilization is responsible for this machine's design - various alien species have been credited on more than one occasion."
 	icon = 'icons/obj/jukebox.dmi'
 	icon_state = "jukebox2-nopower"
 	state_base = "jukebox2"
@@ -68,10 +49,16 @@ datum/track/New(var/title_name, var/audio)
 /obj/machinery/media/jukebox/New()
 	..()
 	update_icon()
-	sound_id = "[type]_[sequential_id(type)]"
+	sound_id = "[/obj/machinery/media/jukebox]_[sequential_id(/obj/machinery/media/jukebox)]"
+
+/obj/machinery/media/jukebox/Initialize()
+	. = ..()
+	tracks = setup_music_tracks(tracks)
 
 /obj/machinery/media/jukebox/Destroy()
 	StopPlaying()
+	QDEL_NULL_LIST(tracks)
+	current_track = null
 	. = ..()
 
 /obj/machinery/media/jukebox/powered()
@@ -82,7 +69,7 @@ datum/track/New(var/title_name, var/audio)
 	if(stat & (NOPOWER|BROKEN) && playing)
 		StopPlaying()
 
-/obj/machinery/media/jukebox/update_icon()
+/obj/machinery/media/jukebox/on_update_icon()
 	overlays.Cut()
 	if(stat & (NOPOWER|BROKEN) || !anchored)
 		if(stat & BROKEN)
@@ -114,7 +101,7 @@ datum/track/New(var/title_name, var/audio)
 	return ..()
 
 /obj/machinery/media/jukebox/tg_ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = 0, datum/tgui/master_ui = null, datum/ui_state/state = tg_default_state)
-	ui = tgui_process.try_update_ui(user, src, ui_key, ui, force_open)
+	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
 	if(!ui)
 		ui = new(user, src, ui_key, "jukebox", "Your Media Library", 340, 440, master_ui, state)
 		ui.open()
@@ -215,7 +202,7 @@ datum/track/New(var/title_name, var/audio)
 
 /obj/machinery/media/jukebox/proc/StopPlaying()
 	playing = 0
-	update_use_power(1)
+	update_use_power(POWER_USE_IDLE)
 	update_icon()
 	QDEL_NULL(sound_token)
 
@@ -226,10 +213,10 @@ datum/track/New(var/title_name, var/audio)
 		return
 
 	// Jukeboxes cheat massively and actually don't share id. This is only done because it's music rather than ambient noise.
-	sound_token = sound_player.PlayLoopingSound(src, sound_id, current_track.sound, volume = volume, range = 7, falloff = 3, prefer_mute = TRUE)
+	sound_token = GLOB.sound_player.PlayLoopingSound(src, sound_id, current_track.GetTrack(), volume = volume, range = 7, falloff = 3, prefer_mute = TRUE)
 
 	playing = 1
-	update_use_power(2)
+	update_use_power(POWER_USE_ACTIVE)
 	update_icon()
 
 /obj/machinery/media/jukebox/proc/AdjustVolume(var/new_volume)

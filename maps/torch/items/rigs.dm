@@ -18,29 +18,29 @@
 	glove_type = /obj/item/clothing/gloves/rig/command
 
 	allowed = list(/obj/item/weapon/gun, /obj/item/device/flashlight, /obj/item/weapon/tank, /obj/item/device/suit_cooling_unit)
-	req_access = list(access_heads) //bridge
+	req_access = list(access_bridge)
 
 /obj/item/clothing/head/helmet/space/rig/command
 	light_overlay = "helmet_light_dual"
-	icon = 'maps/torch/icons/obj/solgov-head.dmi'
-	item_icons = list(slot_head_str = 'maps/torch/icons/mob/solgov-head.dmi')
-	camera = /obj/machinery/camera/network/security
-	species_restricted = list(SPECIES_HUMAN) //no available icons for aliens
+	icon = 'maps/torch/icons/obj/obj_head_solgov.dmi'
+	item_icons = list(slot_head_str = 'maps/torch/icons/mob/onmob_head_solgov.dmi')
+	camera = /obj/machinery/camera/network/command
+	species_restricted = list(SPECIES_HUMAN,SPECIES_IPC) //no available icons for aliens
 
 /obj/item/clothing/suit/space/rig/command
-	icon = 'maps/torch/icons/obj/solgov-suit.dmi'
-	item_icons = list(slot_wear_suit_str = 'maps/torch/icons/mob/solgov-suit.dmi')
-	species_restricted = list(SPECIES_HUMAN)
+	icon = 'maps/torch/icons/obj/obj_suit_solgov.dmi'
+	item_icons = list(slot_wear_suit_str = 'maps/torch/icons/mob/onmob_suit_solgov.dmi')
+	species_restricted = list(SPECIES_HUMAN,SPECIES_IPC)
 
 /obj/item/clothing/shoes/magboots/rig/command
-	icon = 'maps/torch/icons/obj/solgov-feet.dmi'
-	item_icons = list(slot_shoes_str = 'maps/torch/icons/mob/solgov-feet.dmi')
-	species_restricted = list(SPECIES_HUMAN)
+	icon = 'maps/torch/icons/obj/obj_feet_solgov.dmi'
+	item_icons = list(slot_shoes_str = 'maps/torch/icons/mob/onmob_feet_solgov.dmi')
+	species_restricted = list(SPECIES_HUMAN,SPECIES_IPC)
 
 /obj/item/clothing/gloves/rig/command
-	icon = 'maps/torch/icons/obj/solgov-hands.dmi'
-	item_icons = list(slot_gloves_str = 'maps/torch/icons/mob/solgov-hands.dmi')
-	species_restricted = list(SPECIES_HUMAN)
+	icon = 'maps/torch/icons/obj/obj_hands_solgov.dmi'
+	item_icons = list(slot_gloves_str = 'maps/torch/icons/mob/onmob_hands_solgov.dmi')
+	species_restricted = list(SPECIES_HUMAN,SPECIES_IPC)
 
 
 /obj/item/weapon/rig/command/equipped
@@ -184,3 +184,41 @@
 		/obj/item/rig_module/device/flash,
 		/obj/item/rig_module/vision/sechud,
 		/obj/item/rig_module/cooling_unit)
+
+//PATHFINDER
+/obj/item/weapon/rig/command/exploration
+	name = "exploration command HCM"
+	suit_type = "exploration command hardsuit"
+	desc = "A specialized hardsuit rig control module issued to Pathfinders of the Expeditionary Corps."
+	icon_state = "command_exp_rig"
+	armor = list(melee = 35, bullet = 25, laser = 25, energy = 35, bomb = 15, bio = 100, rad = 100)
+
+	chest_type = /obj/item/clothing/suit/space/rig/command/exploration
+	helm_type = /obj/item/clothing/head/helmet/space/rig/command/exploration
+
+	allowed = list(/obj/item/weapon/gun, /obj/item/device/flashlight, /obj/item/weapon/tank, /obj/item/device/suit_cooling_unit)
+
+	req_access = list(access_pathfinder)
+
+/obj/item/clothing/head/helmet/space/rig/command/exploration
+	camera = /obj/machinery/camera/network/exploration
+	icon_state = "command_exp_rig"
+/obj/item/clothing/suit/space/rig/command/exploration
+	icon_state = "command_exp_rig"
+/obj/item/clothing/shoes/magboots/rig/command/exploration
+/obj/item/clothing/gloves/rig/command/exploration
+
+/obj/item/weapon/rig/command/exploration/equipped
+	initial_modules = list(
+		/obj/item/rig_module/maneuvering_jets,
+		/obj/item/rig_module/device/flash,
+		/obj/item/rig_module/device/anomaly_scanner,
+		/obj/item/rig_module/grenade_launcher/light,
+		/obj/item/rig_module/cooling_unit)
+
+/*
+ Overrides for standard mapset rig items
+ */
+
+/obj/item/clothing/head/helmet/space/rig/industrial
+	camera = /obj/machinery/camera/network/supply

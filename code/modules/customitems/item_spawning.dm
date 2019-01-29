@@ -140,7 +140,7 @@
 /hook/startup/proc/load_custom_items()
 
 	var/datum/custom_item/current_data
-	for(var/line in splittext(file2text("config/custom_items.txt"), "\n"))
+	for(var/line in splittext(file2text(CUSTOM_ITEM_CONFIG), "\n"))
 
 		line = trim(line)
 		if(line == "" || !line || findtext(line, "#", 1, 2))
@@ -232,8 +232,8 @@
 		var/obj/item/existing_item
 		if(citem.item_path == /obj/item/weapon/card/id && istype(current_id)) //Set earlier.
 			existing_item = M.wear_id
-		else if(citem.item_path == /obj/item/device/pda)
-			existing_item = locate(/obj/item/device/pda) in M.contents
+		else if(citem.item_path == /obj/item/modular_computer/pda)
+			existing_item = locate(/obj/item/modular_computer/pda) in M.contents
 
 		// Spawn and equip the item.
 		if(existing_item)

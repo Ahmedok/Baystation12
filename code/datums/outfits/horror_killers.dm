@@ -47,7 +47,7 @@
 	id_slot = slot_wear_id
 	id_type = /obj/item/weapon/card/id/syndicate/station_access
 	pda_slot = slot_belt
-	pda_type = /obj/item/device/pda/heads
+	pda_type = /obj/item/modular_computer/pda/heads
 
 /decl/hierarchy/outfit/reaper/post_equip(var/mob/living/carbon/human/H)
 	..()
@@ -57,7 +57,7 @@
 	for(var/i=3, i>0, i--)
 		sec_briefcase.contents += new /obj/item/weapon/spacecash/bundle/c1000
 	sec_briefcase.contents += new /obj/item/weapon/gun/energy/crossbow
-	sec_briefcase.contents += new /obj/item/weapon/gun/projectile/revolver/mateba
-	sec_briefcase.contents += new /obj/item/ammo_magazine/c50
+	sec_briefcase.contents += new /obj/item/weapon/gun/projectile/revolver
+	sec_briefcase.contents += new /obj/item/ammo_magazine/speedloader/magnum
 	sec_briefcase.contents += new /obj/item/weapon/plastique
 	H.equip_to_slot_or_del(sec_briefcase, slot_l_hand)

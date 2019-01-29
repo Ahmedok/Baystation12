@@ -15,7 +15,7 @@
 	head = /obj/item/clothing/head/ushanka
 	gloves = /obj/item/clothing/gloves/thick/combat
 	back = /obj/item/weapon/storage/backpack/satchel
-	belt = /obj/item/weapon/gun/projectile/revolver/mateba
+	belt = /obj/item/weapon/gun/projectile/revolver
 
 /decl/hierarchy/outfit/soviet_soldier/admiral
 	name = "Soviet admiral"
@@ -36,7 +36,7 @@
 	id_slot = slot_wear_id
 	id_type = /obj/item/weapon/card/id/merchant
 	pda_slot = slot_r_store
-	pda_type = /obj/item/device/pda/chef //cause I like the look
+	pda_type = /obj/item/modular_computer/pda //cause I like the look
 	id_pda_assignment = "Merchant"
 
 /decl/hierarchy/outfit/merchant/vox

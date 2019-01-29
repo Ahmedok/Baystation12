@@ -1,21 +1,25 @@
 #if !defined(using_map_DATUM)
 
 	#include "torch_announcements.dm"
+	#include "torch_antagonism.dm"
 	#include "torch_areas.dm"
 	#include "torch_elevator.dm"
 	#include "torch_holodecks.dm"
+	#include "torch_lobby.dm"
+	#include "torch_npcs.dm"
 	#include "torch_overmap.dm"
 	#include "torch_presets.dm"
+	#include "torch_procs.dm"
 	#include "torch_ranks.dm"
+	#include "torch_security_state.dm"
 	#include "torch_shuttles.dm"
 	#include "torch_unit_testing.dm"
-	#include "torch_antagonism.dm"
-	#include "torch_npcs.dm"
-	#include "torch_security_state.dm"
 
 	#include "datums/uniforms.dm"
 	#include "datums/uniforms_expedition.dm"
 	#include "datums/uniforms_fleet.dm"
+	#include "datums/reports.dm"
+	#include "datums/shackle_law_sets.dm"
 	#include "datums/supplypacks/security.dm"
 	#include "datums/supplypacks/science.dm"
 
@@ -28,18 +32,39 @@
 	#include "items/stamps.dm"
 	#include "items/uniform_vendor.dm"
 	#include "items/rigs.dm"
+	#include "items/solbanner.dm"
 
-	#include "items/clothing/clothing.dm"
 	#include "items/clothing/solgov-accessory.dm"
 	#include "items/clothing/solgov-armor.dm"
 	#include "items/clothing/solgov-feet.dm"
 	#include "items/clothing/solgov-head.dm"
 	#include "items/clothing/solgov-suit.dm"
 	#include "items/clothing/solgov-under.dm"
+	#include "items/clothing/terran-accessory.dm"
+	#include "items/clothing/terran-feet.dm"
+	#include "items/clothing/terran-hands.dm"
+	#include "items/clothing/terran-head.dm"
+	#include "items/clothing/terran-suit.dm"
+	#include "items/clothing/terran-under.dm"
 
-	#include "job/access.dm"
-	#include "job/jobs.dm"
-	#include "job/outfits.dm"
+
+	#include "job/torch_access.dm"
+	#include "job/torch_outfits.dm"
+	#include "job/torch_jobs.dm"
+	#include "job/command_jobs.dm"
+	#include "job/corporate_jobs.dm"
+	#include "job/engineering_jobs.dm"
+	#include "job/exploration_jobs.dm"
+	#include "job/medical_jobs.dm"
+	#include "job/misc_jobs.dm"
+	#include "job/research_jobs.dm"
+	#include "job/security_jobs.dm"
+	#include "job/service_jobs.dm"
+	#include "job/supply_jobs.dm"
+
+	#include "machinery/apc_shuttle.dm"
+	#include "machinery/keycard authentication.dm"
+	#include "machinery/suit_storage.dm"
 
 	#include "structures/closets.dm"
 	#include "structures/signs.dm"
@@ -64,6 +89,7 @@
 	#include "loadout/loadout_xeno.dm"
 	#include "loadout/~defines.dm"
 
+	#include "torch-0.dmm"
 	#include "torch-1.dmm"
 	#include "torch-2.dmm"
 	#include "torch-3.dmm"
@@ -76,27 +102,19 @@
 	#include "../away/derelict/derelict.dm"
 	#include "../away/bearcat/bearcat.dm"
 	#include "../away/lost_supply_base/lost_supply_base.dm"
-	#include "../away/marooned/marooned.dm"
 	#include "../away/smugglers/smugglers.dm"
 	#include "../away/magshield/magshield.dm"
 	#include "../away/casino/casino.dm"
 	#include "../away/yacht/yacht.dm"
 	#include "../away/blueriver/blueriver.dm"
 	#include "../away/slavers/slavers_base.dm"
-	#include "../away/hydro/hydro.dm"
 	#include "../away/mobius_rift/mobius_rift.dm"
 	#include "../away/icarus/icarus.dm"
 	#include "../away/errant_pisces/errant_pisces.dm"
 	#include "../away/lar_maria/lar_maria.dm"
+	#include "../away/unishi/unishi.dm"
 
-	#include "../../code/modules/lobby_music/chasing_time.dm"
-	#include "../../code/modules/lobby_music/Torch.dm"
-	#include "../../code/modules/lobby_music/human.dm"
-	#include "../../code/modules/lobby_music/marhaba.dm"
-	#include "../../code/modules/lobby_music/treacherous_voyage.dm"
-	#include "../../code/modules/lobby_music/comet_haley.dm"
-	#include "../../code/modules/lobby_music/lysendraa.dm"
-	#include "../../code/modules/lobby_music/lasers.dm"
+	#include "../../code/datums/music_tracks/chasing_time.dm"
 
 	#define using_map_DATUM /datum/map/torch
 
@@ -105,3 +123,4 @@
 	#warn A map has already been included, ignoring Torch
 
 #endif
+

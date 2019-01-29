@@ -57,6 +57,7 @@
 	var/impact_type
 
 	var/fire_sound
+	var/miss_sounds
 
 	var/vacuum_traversal = 1 //Determines if the projectile can exist in vacuum, if false, the projectile will be deleted if it enters vacuum.
 
@@ -105,7 +106,7 @@
 			T.hotspot_expose(700, 5)
 
 //Checks if the projectile is eligible for embedding. Not that it necessarily will.
-/obj/item/projectile/proc/can_embed()
+/obj/item/projectile/can_embed()
 	//embed must be enabled and damage type must be brute
 	if(!embed || damage_type != BRUTE)
 		return 0
@@ -169,7 +170,7 @@
 		qdel(src)
 		return 0
 
-	loc = get_turf(user) //move the projectile out into the world
+	dropInto(user.loc) //move the projectile out into the world
 
 	firer = user
 	shot_from = launcher.name
@@ -206,6 +207,8 @@
 	if(result == PROJECTILE_FORCE_MISS)
 		if(!silenced)
 			target_mob.visible_message("<span class='notice'>\The [src] misses [target_mob] narrowly!</span>")
+			if(LAZYLEN(miss_sounds))
+				playsound(target_mob.loc, pick(miss_sounds), 60, 1)
 		return 0
 
 	//hit messages
@@ -237,7 +240,7 @@
 		return 0 //no
 
 	if(A == firer)
-		loc = A.loc
+		forceMove(A.loc)
 		return 0 //cannot shoot yourself
 
 	if((bumped && !forced) || (A in permutated))
@@ -277,12 +280,8 @@
 	//the bullet passes through a dense object!
 	if(passthrough)
 		//move ourselves onto A so we can continue on our way.
-		if(A)
-			if(istype(A, /turf))
-				loc = A
-			else
-				loc = A.loc
-			permutated.Add(A)
+		forceMove(get_turf(A))
+		permutated.Add(A)
 		bumped = 0 //reset bumped variable!
 		return 0
 
@@ -418,7 +417,7 @@
 
 /obj/item/projectile/test/Bump(atom/A as mob|obj|turf|area)
 	if(A == firer)
-		loc = A.loc
+		forceMove(A.loc)
 		return //cannot shoot yourself
 	if(istype(A, /obj/item/projectile))
 		return

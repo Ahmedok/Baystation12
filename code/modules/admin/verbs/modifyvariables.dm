@@ -1,14 +1,3 @@
-
-/client/proc/cmd_modify_ticker_variables()
-	set category = "Debug"
-	set name = "Edit Ticker Variables"
-
-	if (ticker == null)
-		to_chat(src, "Game hasn't started yet.")
-	else
-		src.modify_variables(ticker)
-		feedback_add_details("admin_verb","ETV") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
-
 /client/proc/mod_list_add_ass()
 	var/class = "text"
 	var/list/class_input = list("text","num","type","reference","mob reference", "icon","file","color","list","edit referenced object","restore to default")
@@ -513,11 +502,7 @@
 			var_value = var_new
 
 		if("num")
-			if(variable=="light_range")
-				var/var_new = input("Enter new number:","Num",O.get_variable_value(variable)) as null|num
-				if(var_new == null) return
-				O.set_light(var_new)
-			else if(variable=="stat")
+			if(variable=="stat")
 				var/var_new = input("Enter new number:","Num",O.get_variable_value(variable)) as null|num
 				if(var_new == null) return
 				if((O.get_variable_value(variable) == 2) && (var_new < 2))//Bringing the dead back to life

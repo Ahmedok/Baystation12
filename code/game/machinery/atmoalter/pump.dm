@@ -28,8 +28,8 @@
 	var/list/air_mix = StandardAirMix()
 	src.air_contents.adjust_multi("oxygen", air_mix["oxygen"], "nitrogen", air_mix["nitrogen"])
 
-/obj/machinery/portable_atmospherics/powered/pump/update_icon()
-	src.overlays = 0
+/obj/machinery/portable_atmospherics/powered/pump/on_update_icon()
+	overlays.Cut()
 
 	if(on && cell && cell.charge)
 		icon_state = "psiphon:1"
@@ -64,7 +64,7 @@
 	..()
 	var/power_draw = -1
 
-	if(on && cell && cell.charge)
+	if(on && ( powered() || (cell && cell.charge) ) )
 		var/datum/gas_mixture/environment
 		if(holding)
 			environment = holding.air_contents
@@ -90,19 +90,24 @@
 				power_draw = pump_gas(src, air_contents, environment, transfer_moles, power_rating)
 			else
 				power_draw = pump_gas(src, environment, air_contents, transfer_moles, power_rating)
+			if(holding)
+				holding.queue_icon_update()
 
 	if (power_draw < 0)
 		last_flow_rate = 0
 		last_power_draw = 0
 	else
 		power_draw = max(power_draw, power_losses)
-		cell.use(power_draw * CELLRATE)
+		if(!powered())
+			cell.use(power_draw * CELLRATE)
+		else
+			use_power_oneoff(power_draw)
 		last_power_draw = power_draw
 
 		update_connected_network()
 
 		//ran out of charge
-		if (!cell.charge)
+		if (!cell.charge && !powered())
 			power_change()
 			update_icon()
 
@@ -135,7 +140,7 @@
 	if (holding)
 		data["holdingTank"] = list("name" = holding.name, "tankPressure" = round(holding.air_contents.return_pressure() > 0 ? holding.air_contents.return_pressure() : 0))
 
-	ui = GLOB.nanomanager.try_update_ui(user, src, ui_key, ui, data, force_open)
+	ui = SSnano.try_update_ui(user, src, ui_key, ui, data, force_open)
 	if (!ui)
 		ui = new(user, src, ui_key, "portpump.tmpl", "Portable Pump", 480, 410, state = GLOB.physical_state)
 		ui.set_initial_data(data)

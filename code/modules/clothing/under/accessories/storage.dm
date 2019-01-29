@@ -44,9 +44,9 @@
 	to_chat(user, "<span class='notice'>You empty [src].</span>")
 	var/turf/T = get_turf(src)
 	hold.hide_from(usr)
-	for(var/obj/item/I in hold.contents)
-		if(hold)
-			hold.remove_from_storage(I, T)
+	for(var/obj/item/I in hold)
+		hold.remove_from_storage(I, T, 1)
+	hold.finish_bulk_removal()
 	src.add_fingerprint(user)
 
 /obj/item/clothing/accessory/storage/webbing
@@ -146,7 +146,13 @@
 		/obj/item/weapon/magnetic_ammo,
 		/obj/item/ammo_magazine,
 		/obj/item/weapon/net_shell,
-		/obj/item/weapon/reagent_containers/glass/beaker/vial
+		/obj/item/weapon/reagent_containers/glass/beaker/vial,
+		/obj/item/weapon/paper,
+		/obj/item/weapon/pen,
+		/obj/item/weapon/photo,
+		/obj/item/weapon/marshalling_wand,
+		/obj/item/weapon/reagent_containers/pill,
+		/obj/item/weapon/storage/pill_bottle
 	)
 
 /obj/item/clothing/accessory/storage/bandolier/safari/Initialize()

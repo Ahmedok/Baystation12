@@ -70,32 +70,13 @@
 		return ..()
 	if(isrobot(user))
 		return
-	user.drop_item()
+	user.unequip_item()
 	if (O.loc != src.loc)
 		step(O, get_dir(O, src))
 	return
 
-
 /obj/structure/table/attackby(obj/item/W, mob/user, var/click_params)
 	if (!W) return
-
-	// Handle harm intent grabbing/tabling.
-	if(istype(W, /obj/item/grab) && get_dist(src,user)<2)
-		var/obj/item/grab/G = W
-		if (istype(G.affecting, /mob/living/carbon/human))
-			var/obj/occupied = turf_is_crowded()
-			if(occupied)
-				to_chat(user, "<span class='danger'>There's \a [occupied] in the way.</span>")
-				return
-
-			if(G.force_danger())
-				G.affecting.forceMove(src.loc)
-				G.affecting.Weaken(rand(2,5))
-				visible_message("<span class='danger'>[G.assailant] puts [G.affecting] on \the [src].</span>")
-				qdel(W)
-			else
-				to_chat(user, "<span class='danger'>You need a better grip to do that!</span>")
-			return
 
 	// Handle dismantling or placing things on the table from here on.
 	if(isrobot(user))
@@ -119,11 +100,9 @@
 		return
 
 	// Placing stuff on tables
-	if(user.drop_from_inventory(W, src.loc))
+	if(user.unEquip(W, src.loc))
 		auto_align(W, click_params)
 		return 1
-
-	return
 
 /*
 Automatic alignment of items to an invisible grid, defined by CELLS and CELLSIZE, defined in code/__defines/misc.dm.
@@ -173,8 +152,8 @@ Note: This proc can be overwritten to allow for different types of auto-alignmen
 		if (I.anchored || !I.center_of_mass)
 			continue
 		i++
-		I.pixel_x = max(3-i*3, -3) + 1 // There's a sprite layering bug for 0/0 pixelshift, so we avoid it.
-		I.pixel_y = max(4-i*4, -4) + 1
+		I.pixel_x = 1  // There's a sprite layering bug for 0/0 pixelshift, so we avoid it.
+		I.pixel_y = max(3-i*3, -3) + 1
 		I.pixel_z = 0
 
 /obj/structure/table/attack_tk() // no telehulk sorry

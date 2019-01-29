@@ -7,7 +7,6 @@
 
 	idle_power_usage = 100
 	active_power_usage = 1000
-	use_power = 1
 
 	var/spawn_progress_time = 0
 	var/max_spawn_time = 50
@@ -105,7 +104,7 @@
 			max_spawn_time = rand(30,100)
 
 			if(!spawning_types.len || !stored_materials.len)
-				use_power = 1
+				update_use_power(POWER_USE_IDLE)
 				icon_state = "borgcharger0(old)"
 
 		else if(prob(5))
@@ -125,8 +124,8 @@
 	user << browse(dat, "window=alien_replicator")
 
 /obj/machinery/replicator/attackby(obj/item/weapon/W as obj, mob/living/user as mob)
-	user.drop_item()
-	W.forceMove(src)
+	if(!user.unEquip(W, src))
+		return
 	stored_materials.Add(W)
 	src.visible_message("<span class='notice'>\The [user] inserts \the [W] into \the [src].</span>")
 
@@ -142,7 +141,7 @@
 
 				spawning_types.Add(construction[construction[index]])
 				spawn_progress_time = 0
-				use_power = 2
+				update_use_power(POWER_USE_ACTIVE)
 				icon_state = "borgcharger1(old)"
 			else
 				src.visible_message(fail_message)

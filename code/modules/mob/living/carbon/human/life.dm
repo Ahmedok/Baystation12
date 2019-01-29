@@ -43,7 +43,7 @@
 	set invisibility = 0
 	set background = BACKGROUND_ENABLED
 
-	if (transforming)
+	if (HAS_TRANSFORMATION_MOVEMENT_HANDLER(src))
 		return
 
 	fire_alert = 0 //Reset this here, because both breathe() and handle_environment() have a chance to set it.
@@ -180,13 +180,13 @@
 	..()
 	if(stat != DEAD)
 		if ((disabilities & COUGHING) && prob(5) && paralysis <= 1)
-			drop_item()
+			unequip_item()
 			spawn(0)
 				emote("cough")
 
 /mob/living/carbon/human/handle_mutations_and_radiation()
 	if(getFireLoss())
-		if((COLD_RESISTANCE in mutations) || (prob(1)))
+		if((MUTATION_COLD_RESISTANCE in mutations) || (prob(1)))
 			heal_organ_damage(0,1)
 
 	// DNA2 - Gene processing.
@@ -204,7 +204,7 @@
 			set_light(0)
 	else
 		if(species.appearance_flags & RADIATION_GLOWS)
-			set_light(max(1,min(10,radiation/10)), max(1,min(20,radiation/20)), species.get_flesh_colour(src))
+			set_light(0.3, 0.1, max(1,min(20,radiation/20)), 2, species.get_flesh_colour(src))
 		// END DOGSHIT SNOWFLAKE
 
 		var/obj/item/organ/internal/diona/nutrients/rad_organ = locate() in internal_organs
@@ -257,8 +257,8 @@
 			damage = 8
 			radiation -= 4 * RADIATION_SPEED_COEFFICIENT
 
+		damage = Floor(damage * (isSynthetic() ? 0.5 : species.radiation_mod))
 		if(damage)
-			damage *= isSynthetic() ? 0.5 : species.radiation_mod
 			adjustToxLoss(damage * RADIATION_SPEED_COEFFICIENT)
 			updatehealth()
 			if(!isSynthetic() && organs.len)
@@ -284,7 +284,7 @@
 			src.spread_disease_to(M)
 
 
-/mob/living/carbon/human/get_breath_from_internal(volume_needed=BREATH_VOLUME)
+/mob/living/carbon/human/get_breath_from_internal(volume_needed=STD_BREATH_VOLUME)
 	if(internal)
 
 		var/obj/item/weapon/tank/rig_supply
@@ -317,7 +317,7 @@
 	return !failed_last_breath
 
 /mob/living/carbon/human/handle_environment(datum/gas_mixture/environment)
-	if(!environment)
+	if(!environment || (MUTATION_SPACERES in mutations))
 		return
 
 	//Stuff like the xenomorph's plasma regen happens here.
@@ -478,7 +478,7 @@
 	return get_thermal_protection(thermal_protection_flags)
 
 /mob/living/carbon/human/get_cold_protection(temperature)
-	if(COLD_RESISTANCE in mutations)
+	if(MUTATION_COLD_RESISTANCE in mutations)
 		return 1 //Fully protected from the cold.
 
 	temperature = max(temperature, 2.7) //There is an occasional bug where the temperature is miscalculated in ares with a small amount of gas on them, so this is necessary to ensure that that bug does not affect this calculation. Space's temperature is 2.7K and most suits that are intended to protect against any cold, protect down to 2.0K.
@@ -524,10 +524,10 @@
 
 	if(reagents)
 		if(touching) touching.metabolize()
-		if(ingested) ingested.metabolize()
 		if(bloodstr) bloodstr.metabolize()
 
 	// Trace chemicals
+	var/datum/reagents/metabolism/ingested = get_ingested_reagents()
 	for(var/T in chem_doses)
 		if(bloodstr.has_reagent(T) || ingested.has_reagent(T) || touching.has_reagent(T))
 			continue
@@ -537,8 +537,6 @@
 			chem_doses -= T
 
 	updatehealth()
-
-	return //TODO: DEFERRED
 
 // Check if we should die.
 /mob/living/carbon/human/proc/handle_death_check()
@@ -556,7 +554,7 @@
 	if(status_flags & GODMODE)	return 0
 
 	//SSD check, if a logged player is awake put them back to sleep!
-	if(ssd_check() && species.get_ssd(src))
+	if(ssd_check() && species.get_ssd(src) || player_triggered_sleeping)
 		Sleeping(2)
 	if(stat == DEAD)	//DEAD. BROWN BREAD. SWIMMING WITH THE SPESS CARP
 		blinded = 1
@@ -627,8 +625,6 @@
 					if(stat == CONSCIOUS)
 						to_chat(src, "<span class='notice'>You are about to fall asleep...</span>")
 					Sleeping(5)
-
-		confused = max(0, confused - 1)
 
 		// If you're dirty, your gloves will become dirty, too.
 		if(gloves && germ_level > gloves.germ_level && prob(10))
@@ -711,13 +707,12 @@
 			clear_fullscreen("brute")
 
 		if(healths)
+			healths.overlays.Cut()
 			if (chem_effects[CE_PAINKILLER] > 100)
-				healths.overlays.Cut()
 				healths.icon_state = "health_numb"
 			else
 				// Generate a by-limb health display.
 				healths.icon_state = "blank"
-				healths.overlays = null
 
 				var/no_damage = 1
 				var/trauma_val = 0 // Used in calculating softcrit/hardcrit indicators.
@@ -884,11 +879,11 @@
 		return
 
 	if(is_asystole())
-		shock_stage = max(shock_stage, 61)
+		shock_stage = max(shock_stage + 1, 61)
 	var/traumatic_shock = get_shock()
 	if(traumatic_shock >= max(30, 0.8*shock_stage))
 		shock_stage += 1
-	else
+	else if (!is_asystole())
 		shock_stage = min(shock_stage, 160)
 		var/recovery = 1
 		if(traumatic_shock < 0.5 * shock_stage) //lower shock faster if pain is gone completely
@@ -1006,7 +1001,7 @@
 		if(wear_id)
 			var/obj/item/weapon/card/id/I = wear_id.GetIdCard()
 			if(I)
-				var/datum/job/J = job_master.GetJob(I.GetJobName())
+				var/datum/job/J = SSjobs.get_by_title(I.GetJobName())
 				if(J)
 					holder.icon_state = J.hud_icon
 
@@ -1021,7 +1016,7 @@
 			if(I)
 				perpname = I.registered_name
 
-		var/datum/computer_file/crew_record/E = get_crewmember_record(perpname)
+		var/datum/computer_file/report/crew_record/E = get_crewmember_record(perpname)
 		if(E)
 			switch(E.get_criminalStatus())
 				if("Arrest")
@@ -1104,7 +1099,7 @@
 
 	for(var/obj/item/organ/external/E in organs)
 		if(!(E.body_part & protected_limbs) && prob(20))
-			E.take_damage(burn = round(species_heat_mod * log(10, (burn_temperature + 10)), 0.1), used_weapon = fire)
+			E.take_external_damage(burn = round(species_heat_mod * log(10, (burn_temperature + 10)), 0.1), used_weapon = fire)
 
 /mob/living/carbon/human/rejuvenate()
 	restore_blood()
@@ -1146,5 +1141,5 @@
 
 /mob/living/carbon/human/update_living_sight()
 	..()
-	if(XRAY in mutations)
+	if(MUTATION_XRAY in mutations)
 		set_sight(sight|SEE_TURFS|SEE_MOBS|SEE_OBJS)

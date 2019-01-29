@@ -3,7 +3,7 @@
 	desc = "It's used to monitor rooms."
 	icon = 'icons/obj/monitors.dmi'
 	icon_state = "camera"
-	use_power = 2
+	use_power = POWER_USE_ACTIVE
 	idle_power_usage = 5
 	active_power_usage = 10
 	plane = ABOVE_HUMAN_PLANE
@@ -74,6 +74,8 @@
 	wires = new(src)
 	assembly = new(src)
 	assembly.state = 4
+
+	update_icon()
 
 	/* // Use this to look for cameras that have the same c_tag.
 	for(var/obj/machinery/camera/C in cameranet.cameras)
@@ -209,21 +211,11 @@
 			return
 
 	// OTHER
-	else if (can_use() && (istype(W, /obj/item/weapon/paper) || istype(W, /obj/item/device/pda)) && isliving(user))
+	else if (can_use() && istype(W, /obj/item/weapon/paper) && isliving(user))
 		var/mob/living/U = user
-		var/obj/item/weapon/paper/X = null
-		var/obj/item/device/pda/P = null
-
-		var/itemname = ""
-		var/info = ""
-		if(istype(W, /obj/item/weapon/paper))
-			X = W
-			itemname = X.name
-			info = X.info
-		else
-			P = W
-			itemname = P.name
-			info = P.notehtml
+		var/obj/item/weapon/paper/X = W
+		var/itemname = X.name
+		var/info = X.info
 		to_chat(U, "You hold \a [itemname] up to the camera ...")
 		for(var/mob/living/silicon/ai/O in GLOB.living_mob_list_)
 			if(!O.client) continue
@@ -278,11 +270,11 @@
 
 //Used when someone breaks a camera
 /obj/machinery/camera/proc/destroy()
-	stat |= BROKEN
+	set_broken(TRUE)
 	wires.RandomCutAll()
 
 	triggerCameraAlarm()
-	update_icon()
+	queue_icon_update()
 	update_coverage()
 
 	//sparks
@@ -301,7 +293,19 @@
 	if(isXRay()) return SEE_TURFS|SEE_MOBS|SEE_OBJS
 	return 0
 
-/obj/machinery/camera/update_icon()
+/obj/machinery/camera/on_update_icon()
+	pixel_x = 0
+	pixel_y = 0
+
+	var/turf/T = get_step(get_turf(src), turn(src.dir, 180))
+	if(istype(T, /turf/simulated/wall))
+		if(dir == SOUTH)
+			pixel_y = 21
+		else if(dir == WEST)
+			pixel_x = 10
+		else if(dir == EAST)
+			pixel_x = -10
+
 	if (!status || (stat & BROKEN))
 		icon_state = "[initial(icon_state)]1"
 	else if (stat & EMPED)
@@ -457,18 +461,16 @@
 	cam["name"] = sanitize(c_tag)
 	cam["deact"] = !can_use()
 	cam["camera"] = "\ref[src]"
-	cam["x"] = x
-	cam["y"] = y
-	cam["z"] = z
+	cam["x"] = get_x(src)
+	cam["y"] = get_y(src)
+	cam["z"] = get_z(src)
 	return cam
 
 // Resets the camera's wires to fully operational state. Used by one of Malfunction abilities.
 /obj/machinery/camera/proc/reset_wires()
 	if(!wires)
 		return
-	if (stat & BROKEN) // Fix the camera
-		stat &= ~BROKEN
+	set_broken(FALSE) // Fixes the camera and updates the icon.
 	wires.CutAll()
 	wires.MendAll()
-	update_icon()
 	update_coverage()

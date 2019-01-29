@@ -302,7 +302,7 @@ Buildable meters
 /obj/item/pipe/afterattack(turf/simulated/floor/target, mob/user, proximity)
 	if(!proximity) return
 	if(istype(target))
-		user.drop_from_inventory(src, target)
+		user.unEquip(src, target)
 	else
 		return ..()
 
@@ -313,7 +313,7 @@ Buildable meters
 	set name = "Rotate Pipe"
 	set src in view(1)
 
-	if ( usr.stat || usr.restrained() )
+	if (usr.stat || usr.restrained() || !Adjacent(usr) || usr.incapacitated())
 		return
 
 	src.set_dir(turn(src.dir, -90))
@@ -327,6 +327,9 @@ Buildable meters
 		set_dir(2)
 	//src.pipe_set_dir(get_pipe_dir())
 	return
+
+/obj/item/pipe/AltClick()
+	rotate()
 
 /obj/item/pipe/Move()
 	..()
@@ -1315,7 +1318,6 @@ Buildable meters
 #undef PIPE_GAS_MIXER
 #undef PIPE_PASSIVE_GATE
 #undef PIPE_VOLUME_PUMP
-#undef PIPE_OUTLET_INJECT
 #undef PIPE_MTVALVE
 #undef PIPE_MTVALVEM
 #undef PIPE_GAS_FILTER_M
@@ -1328,4 +1330,4 @@ Buildable meters
 #undef PIPE_SUPPLY_MANIFOLD
 #undef PIPE_SCRUBBERS_MANIFOLD
 #undef PIPE_UNIVERSAL
-//#undef PIPE_MANIFOLD4W
+#undef PIPE_MANIFOLD4W

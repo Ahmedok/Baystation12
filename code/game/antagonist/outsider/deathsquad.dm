@@ -1,4 +1,4 @@
-var/datum/antagonist/deathsquad/deathsquad
+GLOBAL_DATUM_INIT(deathsquad, /datum/antagonist/deathsquad, new)
 
 /datum/antagonist/deathsquad
 	id = MODE_DEATHSQUAD
@@ -18,11 +18,6 @@ var/datum/antagonist/deathsquad/deathsquad
 	faction = "deathsquad"
 
 	var/deployed = 0
-
-/datum/antagonist/deathsquad/New(var/no_reference)
-	..()
-	if(!no_reference)
-		deathsquad = src
 
 /datum/antagonist/deathsquad/attempt_spawn()
 	if(..())
@@ -45,7 +40,7 @@ var/datum/antagonist/deathsquad/deathsquad
 		player.equip_to_slot_or_del(new /obj/item/weapon/disk/nuclear(player), slot_r_store)
 	else
 		player.equip_to_slot_or_del(new /obj/item/weapon/plastique(player), slot_l_store)
-	player.equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/revolver/mateba(player), slot_belt)
+	player.equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/revolver(player), slot_belt)
 	player.equip_to_slot_or_del(new /obj/item/weapon/gun/energy/pulse_rifle(player), slot_r_hand)
 	player.equip_to_slot_or_del(new /obj/item/weapon/rig/ert/assetprotection(player), slot_back)
 	player.equip_to_slot_or_del(new /obj/item/weapon/melee/energy/sword(player), slot_l_hand)

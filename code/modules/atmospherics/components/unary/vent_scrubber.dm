@@ -4,7 +4,7 @@
 
 	name = "Air Scrubber"
 	desc = "Has a valve and pump attached to it."
-	use_power = 0
+	use_power = POWER_USE_OFF
 	idle_power_usage = 150		//internal circuitry, friction losses and stuff
 	power_rating = 7500			//7500 W ~ 10 HP
 
@@ -18,7 +18,7 @@
 	var/datum/radio_frequency/radio_connection
 
 	var/hibernate = 0 //Do we even process?
-	var/scrubbing = 1 //0 = siphoning, 1 = scrubbing
+	var/scrubbing = SCRUBBER_EXCHANGE
 	var/list/scrubbing_gas
 
 	var/panic = 0 //is this scrubber panicked?
@@ -30,7 +30,7 @@
 	var/welded = 0
 
 /obj/machinery/atmospherics/unary/vent_scrubber/on
-	use_power = 1
+	use_power = POWER_USE_IDLE
 	icon_state = "map_scrubber_on"
 
 /obj/machinery/atmospherics/unary/vent_scrubber/New()
@@ -40,9 +40,12 @@
 
 /obj/machinery/atmospherics/unary/vent_scrubber/Destroy()
 	unregister_radio(src, frequency)
-	..()
+	if(initial_loc)
+		initial_loc.air_scrub_info -= id_tag
+		initial_loc.air_scrub_names -= id_tag
+	return ..()
 
-/obj/machinery/atmospherics/unary/vent_scrubber/update_icon(var/safety = 0)
+/obj/machinery/atmospherics/unary/vent_scrubber/on_update_icon(var/safety = 0)
 	if(!check_icon_cache())
 		return
 
@@ -139,7 +142,7 @@
 		return 1
 
 	if (!node)
-		use_power = 0
+		update_use_power(POWER_USE_OFF)
 	//broadcast_status()
 	if(!use_power || (stat & (NOPOWER|BROKEN)))
 		return 0
@@ -149,24 +152,25 @@
 	var/datum/gas_mixture/environment = loc.return_air()
 
 	var/power_draw = -1
-	if(scrubbing)
+	var/transfer_moles = 0
+	if(scrubbing == SCRUBBER_SIPHON) //Just siphon all air
 		//limit flow rate from turfs
-		var/transfer_moles = min(environment.total_moles, environment.total_moles*MAX_SCRUBBER_FLOWRATE/environment.volume)	//group_multiplier gets divided out here
-
-		power_draw = scrub_gas(src, scrubbing_gas, environment, air_contents, transfer_moles, power_rating)
-	else //Just siphon all air
-		//limit flow rate from turfs
-		var/transfer_moles = min(environment.total_moles, environment.total_moles*MAX_SIPHON_FLOWRATE/environment.volume)	//group_multiplier gets divided out here
-
+		transfer_moles = min(environment.total_moles, environment.total_moles*MAX_SIPHON_FLOWRATE/environment.volume)	//group_multiplier gets divided out here
 		power_draw = pump_gas(src, environment, air_contents, transfer_moles, power_rating)
+	else //limit flow rate from turfs
+		transfer_moles = min(environment.total_moles, environment.total_moles*MAX_SCRUBBER_FLOWRATE/environment.volume)	//group_multiplier gets divided out here
+		power_draw = scrub_gas(src, scrubbing_gas, environment, air_contents, transfer_moles, power_rating)
 
-	if(scrubbing && power_draw <= 0)	//99% of all scrubbers
+	if(scrubbing != SCRUBBER_SIPHON && power_draw <= 0)	//99% of all scrubbers
 		//Fucking hibernate because you ain't doing shit.
 		hibernate = world.time + (rand(100,200))
+	else if(scrubbing == SCRUBBER_EXCHANGE) // after sleep check so it only does an exchange if there are bad gasses that have been scrubbed
+		transfer_moles = min(environment.total_moles, environment.total_moles*MAX_SCRUBBER_FLOWRATE/environment.volume)
+		power_draw += pump_gas(src, environment, air_contents, transfer_moles / 4, power_rating)
 
 	if (power_draw >= 0)
 		last_power_draw = power_draw
-		use_power(power_draw)
+		use_power_oneoff(power_draw)
 
 	if(network)
 		network.update = 1
@@ -184,32 +188,28 @@
 		return 0
 
 	if(signal.data["power"] != null)
-		use_power = text2num(signal.data["power"])
+		update_use_power(sanitize_integer(text2num(signal.data["power"]), POWER_USE_OFF, POWER_USE_ACTIVE, use_power))
 	if(signal.data["power_toggle"] != null)
-		use_power = !use_power
+		update_use_power(!use_power)
 
 	if(signal.data["panic_siphon"]) //must be before if("scrubbing" thing
 		panic = text2num(signal.data["panic_siphon"])
 		if(panic)
-			use_power = 1
-			scrubbing = 0
+			update_use_power(POWER_USE_IDLE)
+			scrubbing = SCRUBBER_SIPHON
 		else
-			scrubbing = 1
+			scrubbing = SCRUBBER_EXCHANGE
 	if(signal.data["toggle_panic_siphon"] != null)
 		panic = !panic
 		if(panic)
-			use_power = 1
-			scrubbing = 0
+			update_use_power(POWER_USE_IDLE)
+			scrubbing = SCRUBBER_SIPHON
 		else
-			scrubbing = 1
+			scrubbing = SCRUBBER_EXCHANGE
 
 	if(signal.data["scrubbing"] != null)
-		scrubbing = text2num(signal.data["scrubbing"])
-		if(scrubbing)
-			panic = 0
-	if(signal.data["toggle_scrubbing"])
-		scrubbing = !scrubbing
-		if(scrubbing)
+		scrubbing = signal.data["scrubbing"]
+		if(scrubbing != SCRUBBER_SIPHON)
 			panic = 0
 
 	var/list/toggle = list()
@@ -324,10 +324,3 @@
 		to_chat(user, "You are too far away to read the gauge.")
 	if(welded)
 		to_chat(user, "It seems welded shut.")
-
-/obj/machinery/atmospherics/unary/vent_scrubber/Destroy()
-	if(initial_loc)
-		initial_loc.air_scrub_info -= id_tag
-		initial_loc.air_scrub_names -= id_tag
-	..()
-	return

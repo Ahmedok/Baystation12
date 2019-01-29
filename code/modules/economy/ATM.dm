@@ -11,7 +11,6 @@
 	icon = 'icons/obj/terminals.dmi'
 	icon_state = "atm"
 	anchored = 1
-	use_power = 1
 	idle_power_usage = 10
 	var/datum/money_account/authenticated_account
 	var/number_incorrect_tries = 0
@@ -20,7 +19,7 @@
 	var/ticks_left_locked_down = 0
 	var/ticks_left_timeout = 0
 	var/machine_id = ""
-	var/obj/item/weapon/card/held_card
+	var/obj/item/weapon/card/id/held_card
 	var/editing_security_level = 0
 	var/view_screen = NO_SCREEN
 	var/datum/effect/effect/system/spark_spread/spark_system
@@ -47,7 +46,7 @@
 			number_incorrect_tries = 0
 
 	for(var/obj/item/weapon/spacecash/S in src)
-		S.loc = src.loc
+		S.dropInto(loc)
 		if(prob(50))
 			playsound(loc, 'sound/items/polaroid1.ogg', 50, 1)
 		else
@@ -80,8 +79,8 @@
 
 		var/obj/item/weapon/card/id/idcard = I
 		if(!held_card)
-			usr.drop_item()
-			idcard.loc = src
+			if(!user.unEquip(idcard, src))
+				return
 			held_card = idcard
 			if(authenticated_account && held_card.associated_account_number != authenticated_account.account_number)
 				authenticated_account = null
@@ -278,7 +277,9 @@
 					//Below is to avoid a runtime
 					if(tried_account_num)
 						D = get_account(tried_account_num)
-						account_security_level = D.security_level
+
+						if(D)
+							account_security_level = D.security_level
 
 					authenticated_account = attempt_account_access(tried_account_num, tried_pin, held_card && login_card.associated_account_number == tried_account_num ? 2 : 1)
 
@@ -349,7 +350,7 @@
 				if(authenticated_account)
 					var/obj/item/weapon/paper/R = new(src.loc)
 					R.SetName("Account balance: [authenticated_account.owner_name]")
-					R.info = "<b>NT Automated Teller Account Statement</b><br><br>"
+					R.info = "<b>Automated Teller Account Statement</b><br><br>"
 					R.info += "<i>Account holder:</i> [authenticated_account.owner_name]<br>"
 					R.info += "<i>Account number:</i> [authenticated_account.account_number]<br>"
 					R.info += "<i>Balance:</i> T[authenticated_account.money]<br>"
@@ -420,8 +421,8 @@
 					else
 						var/obj/item/I = usr.get_active_hand()
 						if (istype(I, /obj/item/weapon/card/id))
-							usr.drop_item()
-							I.loc = src
+							if(!usr.unEquip(I, src))
+								return
 							held_card = I
 				else
 					release_held_id(usr)
@@ -433,22 +434,16 @@
 
 /obj/machinery/atm/proc/scan_user(mob/living/carbon/human/human_user as mob)
 	if(!authenticated_account)
-		if(human_user.wear_id)
-			var/obj/item/weapon/card/id/I
-			if(istype(human_user.wear_id, /obj/item/weapon/card/id) )
-				I = human_user.wear_id
-			else if(istype(human_user.wear_id, /obj/item/device/pda) )
-				var/obj/item/device/pda/P = human_user.wear_id
-				I = P.id
-			if(I)
-				return I
+		var/obj/item/weapon/card/id/I = human_user.GetIdCard()
+		if(istype(I))
+			return I
 
 // put the currently held id on the ground or in the hand of the user
 /obj/machinery/atm/proc/release_held_id(mob/living/carbon/human/human_user as mob)
 	if(!held_card)
 		return
 
-	held_card.loc = src.loc
+	held_card.dropInto(loc)
 	authenticated_account = null
 	account_security_level = 0
 

@@ -47,10 +47,6 @@
 	return prob(chance_table[idx])
 
 /obj/item/weapon/reagent_containers/food/drinks/bottle/proc/smash(var/newloc, atom/against = null)
-	if(ismob(loc))
-		var/mob/M = loc
-		M.drop_from_inventory(src)
-
 	//Creates a shattering noise and replaces the bottle with a broken_bottle
 	var/obj/item/weapon/broken_bottle/B = new /obj/item/weapon/broken_bottle(newloc)
 	if(prob(33))
@@ -108,12 +104,12 @@
 	if(rag) return
 	..()
 
-/obj/item/weapon/reagent_containers/food/drinks/bottle/update_icon()
+/obj/item/weapon/reagent_containers/food/drinks/bottle/on_update_icon()
 	underlays.Cut()
 	if(rag)
 		var/underlay_image = image(icon='icons/obj/drinks.dmi', icon_state=rag.on_fire? "[rag_underlay]_lit" : rag_underlay)
 		underlays += underlay_image
-		set_light(rag.light_range, rag.light_power, rag.light_color)
+		set_light(rag.light_max_bright, 0.1, rag.light_outer_range, 2, rag.light_color)
 	else
 		set_light(0)
 
@@ -201,7 +197,7 @@
 
 /obj/item/weapon/reagent_containers/food/drinks/bottle/vodka
 	name = "Tunguska Triple Distilled"
-	desc = "Aah, vodka. Prime choice of drink AND fuel by Terrans around the galaxy."
+	desc = "Aah, vodka. Prime choice of drink AND fuel by Indies around the galaxy."
 	icon_state = "vodkabottle"
 	center_of_mass = "x=17;y=3"
 	New()
@@ -382,14 +378,14 @@
 //////////////////////////PREMIUM ALCOHOL ///////////////////////
 /obj/item/weapon/reagent_containers/food/drinks/bottle/premiumvodka
 	name = "Four Stripes Quadruple Distilled"
-	desc = "Premium distilled vodka imported directly from the Terran Colonial Confederation."
+	desc = "Premium distilled vodka imported directly from the Gilgamesh Colonial Confederation."
 	icon_state = "premiumvodka"
 	center_of_mass = "x=17;y=3"
 
 /obj/item/weapon/reagent_containers/food/drinks/bottle/premiumvodka/New()
 	..()
 	reagents.add_reagent(/datum/reagent/ethanol/vodka/premium, 100)
-	var/namepick = pick("Four Stripes","Gilgamesh","Novaya Zemlya","Terran","STS-35")
+	var/namepick = pick("Four Stripes","Gilgamesh","Novaya Zemlya","Indie","STS-35")
 	var/typepick = pick("Absolut","Gold","Quadruple Distilled","Platinum","Standard")
 	name = "[namepick] [typepick]"
 
@@ -478,3 +474,15 @@
 /obj/item/weapon/reagent_containers/food/drinks/bottle/small/ale/New()
 	. = ..()
 	reagents.add_reagent(/datum/reagent/ethanol/ale, 30)
+
+//Probably not the right place for it, but no idea where else to put it without making a brand new DM and slogging through making vars from scratch.
+
+/obj/item/weapon/reagent_containers/food/drinks/bottle/oiljug
+	name = "oil jug"
+	desc = "A plastic jug of engine oil. Not for human consumption."
+	icon_state = "oil"
+	isGlass = 0
+
+/obj/item/weapon/reagent_containers/food/drinks/bottle/oiljug/New()
+	. = ..()
+	reagents.add_reagent(/datum/reagent/lube/oil, 100)

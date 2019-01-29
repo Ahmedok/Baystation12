@@ -4,6 +4,7 @@
 	icon_keyboard = "med_key"
 	icon_screen = "dna"
 	circuit = /obj/item/weapon/circuitboard/curefab
+	idle_power_usage = 500
 	var/curing
 	var/virusing
 
@@ -11,11 +12,10 @@
 
 /obj/machinery/computer/curer/attackby(var/obj/I as obj, var/mob/user as mob)
 	if(istype(I,/obj/item/weapon/reagent_containers))
-		var/mob/living/carbon/C = user
 		if(!container)
+			if(!user.unEquip(I, src))
+				return
 			container = I
-			C.drop_item()
-			I.loc = src
 		return
 	if(istype(I,/obj/item/weapon/virusdish))
 		if(virusing)
@@ -70,7 +70,6 @@
 
 	if(stat & (NOPOWER|BROKEN))
 		return
-	use_power(500)
 
 	if(curing)
 		curing -= 1

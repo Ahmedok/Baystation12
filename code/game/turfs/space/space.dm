@@ -58,22 +58,22 @@
 /turf/space/proc/update_starlight()
 	if(!config.starlight)
 		return
-	if(locate(/turf/simulated) in orange(src,1))
-		set_light(config.starlight)
+	if(locate(/turf/simulated) in orange(src,1)) //Let's make sure not to break everything if people use a crazy setting.
+		set_light(min(0.1*config.starlight, 1), 1, 3, l_color = SSskybox.BGcolor)
 	else
 		set_light(0)
 
 /turf/space/attackby(obj/item/C as obj, mob/user as mob)
 
-	if (istype(C, /obj/item/stack/rods))
+	if (istype(C, /obj/item/stack/material/rods))
 		var/obj/structure/lattice/L = locate(/obj/structure/lattice, src)
 		if(L)
 			return L.attackby(C, user)
-		var/obj/item/stack/rods/R = C
+		var/obj/item/stack/material/rods/R = C
 		if (R.use(1))
 			to_chat(user, "<span class='notice'>Constructing support lattice ...</span>")
 			playsound(src, 'sound/weapons/Genhit.ogg', 50, 1)
-			ReplaceWithLattice()
+			ReplaceWithLattice(R.material.name)
 		return
 
 	if (istype(C, /obj/item/stack/tile/floor))
@@ -96,10 +96,7 @@
 
 /turf/space/Entered(atom/movable/A as mob|obj)
 	..()
-	if(A && A.loc == src && ticker && ticker.mode)
-
-		// Okay, so let's make it so that people can travel z levels but not nuke disks!
-		// if(ticker.mode.name == "mercenary")	return
+	if(A && A.loc == src)
 		if (A.x <= TRANSITIONEDGE || A.x >= (world.maxx - TRANSITIONEDGE + 1) || A.y <= TRANSITIONEDGE || A.y >= (world.maxy - TRANSITIONEDGE + 1))
 			A.touch_map_edge()
 

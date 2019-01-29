@@ -5,14 +5,14 @@
 
 SUBSYSTEM_DEF(atoms)
 	name = "Atoms"
-	init_order = INIT_ORDER_ATOMS
+	init_order = SS_INIT_ATOMS
 	flags = SS_NO_FIRE
 
-	var/initialized = INITIALIZATION_INSSATOMS
 	var/old_initialized
 
 	var/list/late_loaders
-	var/list/created_atoms
+	var/list/created_atoms = list()
+	var/list/atoms_to_init
 
 	var/list/BadInitializeCalls = list()
 
@@ -29,26 +29,27 @@ SUBSYSTEM_DEF(atoms)
 
 	LAZYINITLIST(late_loaders)
 
-	var/count
 	var/list/mapload_arg = list(TRUE)
-	if(atoms)
-		created_atoms = list()
-		count = atoms.len
-		for(var/I in atoms)
-			var/atom/A = I
-			if(!A.initialized)
-				if(InitAtom(I, mapload_arg))
-					atoms -= I
-				CHECK_TICK
-	else
-		count = 0
+	atoms_to_init = atoms || created_atoms
+
+	var/count = atoms_to_init.len
+	while(atoms_to_init.len)
+		var/atom/A = atoms_to_init[atoms_to_init.len]
+		var/list/arguments = mapload_arg + atoms_to_init[A]
+		atoms_to_init.len--
+		if(!(A.atom_flags & ATOM_FLAG_INITIALIZED))
+			InitAtom(A, arguments)
+			CHECK_TICK
+
+	if(!atoms)
 		for(var/atom/A in world)
-			if(!A.initialized)
+			if(!(A.atom_flags & ATOM_FLAG_INITIALIZED))
 				InitAtom(A, mapload_arg)
 				++count
 				CHECK_TICK
 
 	report_progress("Initialized [count] atom\s")
+	pass(count)
 
 	initialized = INITIALIZATION_INNEW_REGULAR
 
@@ -58,10 +59,6 @@ SUBSYSTEM_DEF(atoms)
 			A.LateInitialize(arglist(mapload_arg))
 		report_progress("Late initialized [late_loaders.len] atom\s")
 		late_loaders.Cut()
-
-	if(atoms)
-		. = created_atoms + atoms
-		created_atoms = null
 
 /datum/controller/subsystem/atoms/proc/InitAtom(atom/A, list/arguments)
 	var/the_type = A.type
@@ -93,7 +90,7 @@ SUBSYSTEM_DEF(atoms)
 
 	if(!A)	//possible harddel
 		qdeleted = TRUE
-	else if(!A.initialized)
+	else if(!(A.atom_flags & ATOM_FLAG_INITIALIZED))
 		BadInitializeCalls[the_type] |= BAD_INIT_DIDNT_INIT
 
 	return qdeleted || QDELING(A)

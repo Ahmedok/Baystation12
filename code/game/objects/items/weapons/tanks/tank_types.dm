@@ -17,6 +17,7 @@
 	icon_state = "oxygen"
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
 	starting_pressure = list("oxygen" = 6*ONE_ATMOSPHERE)
+	volume = 180
 
 /obj/item/weapon/tank/oxygen/yellow
 	desc = "A tank of oxygen. This one is yellow."
@@ -34,7 +35,8 @@
 	desc = "A tank with an N2O/O2 gas mix."
 	icon_state = "anesthetic"
 	item_state = "an_tank"
-	starting_pressure = list("oxygen" = 3*ONE_ATMOSPHERE*O2STANDARD, "sleeping_agent" = 3*ONE_ATMOSPHERE*N2STANDARD) 
+	starting_pressure = list("oxygen" = 6*ONE_ATMOSPHERE*O2STANDARD, "sleeping_agent" = 6*ONE_ATMOSPHERE*N2STANDARD)
+	volume = 270
 
 /*
  * Air
@@ -43,7 +45,8 @@
 	name = "air tank"
 	desc = "Mixed anyone?"
 	icon_state = "oxygen"
-	starting_pressure = list("oxygen" = 6*ONE_ATMOSPHERE*O2STANDARD, "nitrogen" = 6*ONE_ATMOSPHERE*N2STANDARD) 
+	starting_pressure = list("oxygen" = 6*ONE_ATMOSPHERE*O2STANDARD, "nitrogen" = 6*ONE_ATMOSPHERE*N2STANDARD)
+	volume = 180
 
 /*
  * Phoron
@@ -73,12 +76,10 @@
 	..()
 	if (istype(W, /obj/item/weapon/flamethrower))
 		var/obj/item/weapon/flamethrower/F = W
-		if (!F.status||F.ptank)	return
+		if (!F.status || F.ptank || user.unEquip(src, F))
+			return
 		master = F
 		F.ptank = src
-		user.remove_from_mob(src)
-		forceMove(F)
-
 /*
  * Emergency Oxygen
  */
@@ -90,9 +91,11 @@
 	obj_flags = OBJ_FLAG_CONDUCTIBLE
 	slot_flags = SLOT_BELT
 	w_class = ITEM_SIZE_SMALL
-	force = 4
+	force = 5
+	attack_cooldown = DEFAULT_WEAPON_COOLDOWN
+	melee_accuracy_bonus = -10
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
-	volume = 2 //Tiny. Real life equivalents only have 21 breaths of oxygen in them. They're EMERGENCY tanks anyway -errorage (dangercon 2011)
+	volume = 40 //Tiny. Real life equivalents only have 21 breaths of oxygen in them. They're EMERGENCY tanks anyway -errorage (dangercon 2011)
 
 /obj/item/weapon/tank/emergency/oxygen
 	name = "emergency oxygen tank"
@@ -104,13 +107,14 @@
 /obj/item/weapon/tank/emergency/oxygen/engi
 	name = "extended-capacity emergency oxygen tank"
 	icon_state = "emergency_engi"
-	volume = 6
+	volume = 60
 
 /obj/item/weapon/tank/emergency/oxygen/double
 	name = "double emergency oxygen tank"
 	icon_state = "emergency_double"
 	gauge_icon = "indicator_emergency_double"
-	volume = 10
+	volume = 90
+	w_class = ITEM_SIZE_NORMAL
 
 /obj/item/weapon/tank/emergency/nitrogen
 	name = "emergency nitrogen tank"
@@ -123,7 +127,7 @@
 	name = "double emergency nitrogen tank"
 	icon_state = "emergency_double_nitrogen"
 	gauge_icon = "indicator_emergency_double"
-	volume = 10
+	volume = 60
 
 /*
  * Nitrogen
@@ -133,4 +137,5 @@
 	desc = "A tank of nitrogen."
 	icon_state = "oxygen_fr"
 	distribute_pressure = ONE_ATMOSPHERE*O2STANDARD
-	starting_pressure = list("nitrogen" = 6*ONE_ATMOSPHERE)
+	starting_pressure = list("nitrogen" = 10*ONE_ATMOSPHERE)
+	volume = 180

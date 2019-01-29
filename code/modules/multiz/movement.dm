@@ -153,11 +153,11 @@
 		// Entered() which is part of Move(), by spawn()ing we let that complete.  But we want to preserve if we were in client movement
 		// or normal movement so other move behavior can continue.
 		var/mob/M = src
-		var/is_client_moving = (ismob(M) && M.client && M.client.moving)
+		var/is_client_moving = (ismob(M) && M.moving)
 		spawn(0)
-			if(is_client_moving) M.client.moving = 1
+			if(is_client_moving) M.moving = 1
 			handle_fall(below)
-			if(is_client_moving) M.client.moving = 0
+			if(is_client_moving) M.moving = 0
 
 //For children to override
 /atom/movable/proc/can_fall(var/anchor_bypass = FALSE, var/turf/location_override = src.loc)
@@ -169,7 +169,7 @@
 
 	//Override will make checks from different location used for prediction
 	if(location_override)
-		if(locate(/obj/structure/lattice, location_override) || locate(/obj/structure/catwalk, location_override))
+		if(locate(/obj/structure/lattice, location_override) || locate(/obj/structure/catwalk, location_override) || locate(/obj/structure/ladder, location_override))
 			return FALSE
 
 		var/turf/below = GetBelow(location_override)
@@ -245,4 +245,14 @@
 	apply_damage(rand(0, damage), BRUTE, BP_L_ARM)
 	apply_damage(rand(0, damage), BRUTE, BP_R_ARM)
 	weakened = max(weakened,2)
+	if(prob(skill_fail_chance(SKILL_HAULING, 40, SKILL_EXPERT, 2)))
+		var/list/victims = list()
+		for(var/tag in list(BP_L_FOOT, BP_R_FOOT, BP_L_ARM, BP_R_ARM))
+			var/obj/item/organ/external/E = get_organ(tag)
+			if(E && !E.is_stump() && !E.dislocated && !BP_IS_ROBOTIC(E))
+				victims += E
+		if(victims.len)
+			var/obj/item/organ/external/victim = pick(victims)
+			victim.dislocate()
+			to_chat(src, "<span class='warning'>You feel a sickening pop as your [victim.joint] is wrenched out of the socket.</span>")
 	updatehealth()

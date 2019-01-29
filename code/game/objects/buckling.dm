@@ -35,7 +35,7 @@
 	M.buckled = src
 	M.facing_dir = null
 	M.set_dir(buckle_dir ? buckle_dir : dir)
-	M.update_canmove()
+	M.UpdateLyingBuckledAndVerbStatus()
 	M.update_floating()
 	buckled_mob = M
 
@@ -47,7 +47,7 @@
 		. = buckled_mob
 		buckled_mob.buckled = null
 		buckled_mob.anchored = initial(buckled_mob.anchored)
-		buckled_mob.update_canmove()
+		buckled_mob.UpdateLyingBuckledAndVerbStatus()
 		buckled_mob.update_floating()
 		buckled_mob = null
 
@@ -62,9 +62,6 @@
 			animate(M, pixel_x = M.default_pixel_x, pixel_y = M.default_pixel_y, 4, 1, LINEAR_EASING)
 
 /obj/proc/user_buckle_mob(mob/living/M, mob/user)
-	if(!ticker) //why do we need to check this?
-		to_chat(user, "<span class='warning'>You can't buckle anyone in before the game starts.</span>")
-		return 0
 	if(!user.Adjacent(M) || user.restrained() || user.stat || istype(user, /mob/living/silicon/pai))
 		return 0
 	if(M == buckled_mob)

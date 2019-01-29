@@ -21,19 +21,19 @@
 		to_chat(M, "<span class='danger'>You've been silenced!</span>")
 		return
 
-	if (!(istype(user, /mob/living/carbon/human) || ticker) && ticker.mode.name != "monkey")
+	if (!user.IsAdvancedToolUser())
 		to_chat(user, "<span class='danger'>You don't have the dexterity to do this!</span>")
 		return
 
-	if ((CLUMSY in user.mutations) && prob(50))
+	if ((MUTATION_CLUMSY in user.mutations) && prob(50))
 		to_chat(user, "<span class='danger'>The rod slips out of your hand and hits your head.</span>")
 		user.take_organ_damage(10)
 		user.Paralyse(20)
 		return
 
-	if(cult && iscultist(M))
+	if(GLOB.cult && iscultist(M))
 		M.visible_message("<span class='notice'>\The [user] waves \the [src] over \the [M]'s head.</span>")
-		cult.offer_uncult(M)
+		GLOB.cult.offer_uncult(M)
 		return
 
 	..()
@@ -41,6 +41,13 @@
 /obj/item/weapon/nullrod/afterattack(var/atom/A, var/mob/user, var/proximity)
 	if(!proximity)
 		return
+
+	if(istype(A, /obj/structure/deity/altar))
+		var/obj/structure/deity/altar/altar = A
+		if(!altar.linked_god.silenced) //Don't want them to infinity spam it.
+			altar.linked_god.silence(10)
+			new /obj/effect/temporary(get_turf(altar),'icons/effects/effects.dmi',"purple_electricity_constant", 10)
+			altar.visible_message("<span class='notice'>\The [altar] groans in protest as reality settles around \the [src].</span>")
 
 	if(istype(A, /turf/simulated/wall/cult))
 		var/turf/simulated/wall/cult/W = A
@@ -205,7 +212,7 @@
 		else
 			health -= rand(1,3)
 
-	else if (HULK in user.mutations)
+	else if (MUTATION_HULK in user.mutations)
 		health = 0
 	else
 		health -= rand(5,8)

@@ -31,7 +31,7 @@ meteor_act
 		var/obj/item/weapon/material/shard/shrapnel/SP = new()
 		SP.SetName((P.name != "shrapnel")? "[P.name] shrapnel" : "shrapnel")
 		SP.desc = "[SP.desc] It looks like it was fired from [P.shot_from]."
-		SP.loc = organ
+		SP.forceMove(organ)
 		organ.embed(SP)
 
 	var/blocked = ..(P, def_zone)
@@ -97,7 +97,7 @@ meteor_act
 		def_zone = get_organ(check_zone(def_zone))
 	if(!def_zone)
 		return 0
-	var/protection = 0
+	var/protection = def_zone.species.natural_armour_values ? def_zone.species.natural_armour_values[type] : 0
 	var/list/protective_gear = list(head, wear_mask, wear_suit, w_uniform, gloves, shoes)
 	for(var/obj/item/clothing/gear in protective_gear)
 		if(gear.body_parts_covered & def_zone.body_part)
@@ -106,7 +106,7 @@ meteor_act
 			for(var/obj/item/clothing/accessory/bling in gear.accessories)
 				if(bling.body_parts_covered & def_zone.body_part)
 					protection = add_armor(protection, bling.armor[type])
-	return protection
+	return Clamp(protection,0,100)
 
 /mob/living/carbon/human/proc/check_head_coverage()
 
@@ -143,7 +143,12 @@ meteor_act
 	if(user == src) // Attacking yourself can't miss
 		return target_zone
 
-	var/hit_zone = get_zone_with_miss_chance(target_zone, src)
+	var/accuracy_penalty = user.melee_accuracy_mods()
+	accuracy_penalty += 10*get_skill_difference(SKILL_COMBAT, user)
+	accuracy_penalty += 10*(I.w_class - ITEM_SIZE_NORMAL)
+	accuracy_penalty -= I.melee_accuracy_bonus
+
+	var/hit_zone = get_zone_with_miss_chance(target_zone, src, accuracy_penalty)
 
 	if(!hit_zone)
 		visible_message("<span class='danger'>\The [user] misses [src] with \the [I]!</span>")
@@ -195,13 +200,15 @@ meteor_act
 			if(headcheck(hit_zone))
 				//Harder to score a stun but if you do it lasts a bit longer
 				if(prob(effective_force))
-					visible_message("<span class='danger'>[src] [species.knockout_message]</span>")
 					apply_effect(20, PARALYZE, blocked)
+					if(lying)
+						visible_message("<span class='danger'>[src] [species.knockout_message]</span>")
 			else
 				//Easier to score a stun but lasts less time
 				if(prob(effective_force + 10))
-					visible_message("<span class='danger'>[src] has been knocked down!</span>")
 					apply_effect(6, WEAKEN, blocked)
+					if(lying)
+						visible_message("<span class='danger'>[src] has been knocked down!</span>")
 
 		//Apply blood
 		attack_bloody(I, user, effective_force, hit_zone)
@@ -284,14 +291,14 @@ meteor_act
 
 /mob/living/carbon/human/emag_act(var/remaining_charges, mob/user, var/emag_source)
 	var/obj/item/organ/external/affecting = get_organ(user.zone_sel.selecting)
-	if(!affecting || !(affecting.robotic >= ORGAN_ROBOT))
+	if(!affecting || !BP_IS_ROBOTIC(affecting))
 		to_chat(user, "<span class='warning'>That limb isn't robotic.</span>")
 		return -1
-	if(affecting.sabotaged)
+	if(affecting.status & ORGAN_SABOTAGED)
 		to_chat(user, "<span class='warning'>[src]'s [affecting.name] is already sabotaged!</span>")
 		return -1
 	to_chat(user, "<span class='notice'>You sneakily slide [emag_source] into the dataport on [src]'s [affecting.name] and short out the safeties.</span>")
-	affecting.sabotaged = 1
+	affecting.status |= ORGAN_SABOTAGED
 	return 1
 
 //this proc handles being hit by a thrown atom
@@ -300,7 +307,7 @@ meteor_act
 		var/obj/O = AM
 
 		if(in_throw_mode && !get_active_hand() && speed <= THROWFORCE_SPEED_DIVISOR)	//empty active hand and we're in throw mode
-			if(canmove && !restrained())
+			if(!incapacitated())
 				if(isturf(O.loc))
 					put_in_active_hand(O)
 					visible_message("<span class='warning'>[src] catches [O]!</span>")
@@ -310,10 +317,11 @@ meteor_act
 		var/dtype = O.damtype
 		var/throw_damage = O.throwforce*(speed/THROWFORCE_SPEED_DIVISOR)
 
-		var/zone
+		var/zone = BP_CHEST
 		if (istype(O.thrower, /mob/living))
 			var/mob/living/L = O.thrower
-			zone = check_zone(L.zone_sel.selecting)
+			if(L.zone_sel)
+				zone = check_zone(L.zone_sel.selecting)
 		else
 			zone = ran_zone(BP_CHEST,75)	//Hits a random part of the body, geared towards the chest
 
@@ -359,7 +367,7 @@ meteor_act
 		if(dtype == BRUTE && istype(O,/obj/item))
 			var/obj/item/I = O
 			if (!is_robot_module(I))
-				var/sharp = is_sharp(I)
+				var/sharp = I.can_embed()
 				var/damage = throw_damage //the effective damage used for embedding purposes, no actual damage is dealt here
 				if (armor)
 					damage *= blocked_mult(armor)
@@ -392,7 +400,7 @@ meteor_act
 				var/turf/T = near_wall(dir,2)
 
 				if(T)
-					src.loc = T
+					src.forceMove(T)
 					visible_message("<span class='warning'>[src] is pinned to the wall by [O]!</span>","<span class='warning'>You are pinned to the wall by [O]!</span>")
 					src.anchored = 1
 					src.pinned += O

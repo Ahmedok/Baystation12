@@ -10,27 +10,24 @@
 	eyeblur = 4
 	hitscan = 1
 	invisibility = 101	//beam projectiles are invisible as they are rendered by the effect engine
+	penetration_modifier = 0.3
 
 	muzzle_type = /obj/effect/projectile/laser/muzzle
 	tracer_type = /obj/effect/projectile/laser/tracer
 	impact_type = /obj/effect/projectile/laser/impact
 
 /obj/item/projectile/beam/practice
-	name = "laser"
-	icon_state = "laser"
 	fire_sound = 'sound/weapons/Taser.ogg'
-	pass_flags = PASS_FLAG_TABLE | PASS_FLAG_GLASS | PASS_FLAG_GRILLE
 	damage = 2
-	damage_type = BURN
-	check_armour = "laser"
 	eyeblur = 2
 
 /obj/item/projectile/beam/smalllaser
 	damage = 25
+	armor_penetration = 10
 
 /obj/item/projectile/beam/midlaser
 	damage = 50
-	armor_penetration = 10
+	armor_penetration = 20
 
 /obj/item/projectile/beam/heavylaser
 	name = "heavy laser"
@@ -84,16 +81,19 @@
 	if(isturf(target))
 		target.ex_act(2)
 	..()
-
-/obj/item/projectile/beam/pulse/bogani
-	name = "pulsar"
-	icon_state = "bogb"
-	fire_sound='sound/weapons/blaster.ogg'
+	
+/obj/item/projectile/beam/pulse/skrell
+	icon_state = "pu_laser"
+	damage = 20
+	muzzle_type = /obj/effect/projectile/laser/pulse/skrell/muzzle
+	tracer_type = /obj/effect/projectile/laser/pulse/skrell/tracer
+	impact_type = /obj/effect/projectile/laser/pulse/skrell/impact
+	
+/obj/item/projectile/beam/pulse/skrell/heavy
 	damage = 30
-
-	muzzle_type = /obj/effect/projectile/laser/bogani/muzzle
-	tracer_type = /obj/effect/projectile/laser/bogani/tracer
-	impact_type = /obj/effect/projectile/laser/bogani/impact
+	
+/obj/item/projectile/beam/pulse/skrell/single
+	damage = 50
 
 /obj/item/projectile/beam/emitter
 	name = "emitter beam"

@@ -2,11 +2,10 @@
 //added different sort of gibs and animations. N
 /mob/proc/gib(anim="gibbed-m",do_gibs)
 	death(1)
-	transforming = 1
-	canmove = 0
+	ADD_TRANSFORMATION_MOVEMENT_HANDLER(src)
 	icon = null
 	set_invisibility(101)
-	update_canmove()
+	UpdateLyingBuckledAndVerbStatus()
 	remove_from_dead_mob_list()
 
 	var/atom/movable/overlay/animation = null
@@ -30,8 +29,7 @@
 /mob/proc/dust(anim="dust-m",remains=/obj/effect/decal/cleanable/ash)
 	death(1)
 	var/atom/movable/overlay/animation = null
-	transforming = 1
-	canmove = 0
+	ADD_TRANSFORMATION_MOVEMENT_HANDLER(src)
 	icon = null
 	set_invisibility(101)
 
@@ -59,7 +57,7 @@
 
 	set_stat(DEAD)
 	reset_plane_and_layer()
-	update_canmove()
+	UpdateLyingBuckledAndVerbStatus()
 
 	dizziness = 0
 	jitteriness = 0
@@ -71,10 +69,11 @@
 	drop_r_hand()
 	drop_l_hand()
 
-	//TODO:  Change death state to health_dead for all these icon files.  This is a stop gap.
+	SSstatistics.report_death(src)
 
+	//TODO:  Change death state to health_dead for all these icon files.  This is a stop gap.
 	if(healths)
-		healths.overlays = null // This is specific to humans but the relevant code is here; shouldn't mess with other mobs.
+		healths.overlays.Cut() // This is specific to humans but the relevant code is here; shouldn't mess with other mobs.
 		if("health7" in icon_states(healths.icon))
 			healths.icon_state = "health7"
 		else
@@ -87,7 +86,7 @@
 
 	update_icon()
 
-	if(ticker && ticker.mode)
-		ticker.mode.check_win()
+	if(SSticker.mode)
+		SSticker.mode.check_win()
 	to_chat(src,"<span class='deadsay'>[show_dead_message]</span>")
 	return 1

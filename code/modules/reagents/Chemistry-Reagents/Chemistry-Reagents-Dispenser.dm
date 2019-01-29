@@ -53,6 +53,10 @@
 	else if(alien != IS_DIONA)
 		M.adjustToxLoss(removed * 1.5)
 
+/datum/reagent/ammonia/overdose(var/mob/living/carbon/M, var/alien)
+	if(alien != IS_VOX || volume > overdose*6)
+		..()
+
 /datum/reagent/carbon
 	name = "Carbon"
 	description = "A chemical element, the building block of life."
@@ -65,12 +69,13 @@
 /datum/reagent/carbon/affect_ingest(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien == IS_DIONA)
 		return
-	if(M.ingested && M.ingested.reagent_list.len > 1) // Need to have at least 2 reagents - cabon and something to remove
-		var/effect = 1 / (M.ingested.reagent_list.len - 1)
-		for(var/datum/reagent/R in M.ingested.reagent_list)
+	var/datum/reagents/ingested = M.get_ingested_reagents()
+	if(ingested && ingested.reagent_list.len > 1) // Need to have at least 2 reagents - cabon and something to remove
+		var/effect = 1 / (ingested.reagent_list.len - 1)
+		for(var/datum/reagent/R in ingested.reagent_list)
 			if(R == src)
 				continue
-			M.ingested.remove_reagent(R.type, removed * effect)
+			ingested.remove_reagent(R.type, removed * effect)
 
 /datum/reagent/carbon/touch_turf(var/turf/T)
 	if(!istype(T, /turf/space))
@@ -214,8 +219,8 @@
 
 /datum/reagent/lithium/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien != IS_DIONA)
-		if(M.canmove && !M.restrained() && istype(M.loc, /turf/space))
-			step(M, pick(GLOB.cardinal))
+		if(istype(M.loc, /turf/space))
+			M.SelfMove(pick(GLOB.cardinal))
 		if(prob(5))
 			M.emote(pick("twitch", "drool", "moan"))
 
@@ -228,8 +233,8 @@
 
 /datum/reagent/mercury/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
 	if(alien != IS_DIONA)
-		if(M.canmove && !M.restrained() && istype(M.loc, /turf/space))
-			step(M, pick(GLOB.cardinal))
+		if(istype(M.loc, /turf/space))
+			M.SelfMove(pick(GLOB.cardinal))
 		if(prob(5))
 			M.emote(pick("twitch", "drool", "moan"))
 		M.adjustBrainLoss(0.1)
@@ -247,6 +252,12 @@
 	taste_description = "sweetness" //potassium is bitter in higher doses but sweet in lower ones.
 	reagent_state = SOLID
 	color = "#a0a0a0"
+
+/datum/reagent/potassium/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
+	if(volume > 3)
+		M.add_chemical_effect(CE_PULSE, 1)
+	if(volume > 10)
+		M.add_chemical_effect(CE_PULSE, 1)
 
 /datum/reagent/radium
 	name = "Radium"
@@ -350,7 +361,7 @@
 				if(!screamed && affecting.can_feel_pain())
 					screamed = 1
 					H.emote("scream")
-				affecting.disfigured = 1
+				affecting.status |= ORGAN_DISFIGURED
 
 /datum/reagent/acid/touch_obj(var/obj/O)
 	if(O.unacidable)
@@ -397,22 +408,12 @@
 	glass_desc = "The organic compound commonly known as table sugar and sometimes called saccharose. This white, odorless, crystalline powder has a pleasing, sweet taste."
 	glass_icon = DRINK_ICON_NOISY
 
-/datum/reagent/sugar/affect_blood(var/mob/living/carbon/M, var/alien, var/removed)
+/datum/reagent/sugar/affect_blood(var/mob/living/carbon/human/M, var/alien, var/removed)
 	M.nutrition += removed * 3
 
 	if(alien == IS_UNATHI)
-		if(M.chem_doses[type] < 2)
-			if(M.chem_doses[type] == metabolism * 2 || prob(5))
-				M.emote("yawn")
-		else if(M.chem_doses[type] < 5)
-			M.eye_blurry = max(M.eye_blurry, 10)
-		else if(M.chem_doses[type] < 20)
-			if(prob(50))
-				M.Weaken(2)
-			M.drowsyness = max(M.drowsyness, 20)
-		else
-			M.sleeping = max(M.sleeping, 20)
-			M.drowsyness = max(M.drowsyness, 60)
+		var/datum/species/unathi/S = M.species
+		S.handle_sugar(M,src)
 
 /datum/reagent/sulfur
 	name = "Sulfur"

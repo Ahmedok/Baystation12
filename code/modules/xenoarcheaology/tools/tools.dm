@@ -5,17 +5,26 @@
 	icon_state = "locator"
 	item_state = "locator"
 	origin_tech = list(TECH_MATERIAL = 2, TECH_DATA = 2, TECH_BLUESPACE = 2)
-	matter = list(DEFAULT_WALL_MATERIAL = 500)
+	matter = list(MATERIAL_ALUMINIUM = 250, MATERIAL_STEEL = 250, MATERIAL_GLASS = 50)
 	w_class = ITEM_SIZE_SMALL
 
 /obj/item/device/gps/attack_self(var/mob/user as mob)
-	var/turf/T = get_turf(src)
-	to_chat(user, "<span class='notice'>\icon[src] \The [src] flashes <i>[T.x]:[T.y]:[T.z]</i>.</span>")
+	to_chat(user, "<span class='notice'>\icon[src] \The [src] flashes <i>[get_coordinates()]</i>.</span>")
 
 /obj/item/device/gps/examine(var/mob/user)
 	..()
+	to_chat(user, "<span class='notice'>\The [src]'s screen shows: <i>[get_coordinates()]</i>.</span>")
+
+/obj/item/device/gps/proc/get_coordinates()
 	var/turf/T = get_turf(src)
-	to_chat(user, "<span class='notice'>\The [src]'s screen shows: <i>[T.x]:[T.y]:[T.z]</i>.</span>")
+	return T ? "[T.x]:[T.y]:[T.z]" : "N/A"
+
+/mob/living/carbon/human/Stat()
+	. = ..()
+	if(statpanel("Status"))
+		var/obj/item/device/gps/L = locate() in src
+		if(L)
+			stat("Coordinates:", "[L.get_coordinates()]")
 
 /obj/item/device/measuring_tape
 	name = "measuring tape"
@@ -23,11 +32,11 @@
 	icon = 'icons/obj/xenoarchaeology.dmi'
 	icon_state = "measuring"
 	origin_tech = list(TECH_MATERIAL = 1)
-	matter = list(DEFAULT_WALL_MATERIAL = 100)
+	matter = list(MATERIAL_STEEL = 100)
 	w_class = ITEM_SIZE_SMALL
 
 /obj/item/weapon/storage/bag/fossils
-	name = "Fossil Satchel"
+	name = "fossil satchel"
 	desc = "Transports delicate fossils in suspension so they don't break during transit."
 	icon = 'icons/obj/mining.dmi'
 	icon_state = "satchel"
@@ -50,13 +59,13 @@
 		S.desc = "a bag for holding research samples."
 
 /obj/item/device/ano_scanner
-	name = "Alden-Saraspova counter"
-	desc = "Aids in triangulation of exotic particles."
+	name = "\improper Alden-Saraspova counter"
+	desc = "A device which aids in triangulation of exotic particles."
 	icon = 'icons/obj/xenoarchaeology.dmi'
 	icon_state = "flashgun"
 	item_state = "lampgreen"
 	origin_tech = list(TECH_BLUESPACE = 3, TECH_MAGNET = 3)
-	matter = list(DEFAULT_WALL_MATERIAL = 10000,"glass" = 5000)
+	matter = list(MATERIAL_STEEL = 5000, MATERIAL_ALUMINIUM = 5000, MATERIAL_GLASS = 5000)
 	w_class = ITEM_SIZE_SMALL
 	slot_flags = SLOT_BELT
 
@@ -108,12 +117,12 @@
 
 /obj/item/device/depth_scanner
 	name = "depth analysis scanner"
-	desc = "Used to check spatial depth and density of rock outcroppings."
+	desc = "A device used to check spatial depth and density of rock outcroppings."
 	icon = 'icons/obj/pda.dmi'
 	icon_state = "crap"
 	item_state = "analyzer"
 	origin_tech = list(TECH_MAGNET = 2, TECH_ENGINEERING = 2, TECH_BLUESPACE = 2)
-	matter = list(DEFAULT_WALL_MATERIAL = 1000,"glass" = 1000)
+	matter = list(MATERIAL_STEEL = 1000, MATERIAL_GLASS = 500, MATERIAL_ALUMINIUM = 150)
 	w_class = ITEM_SIZE_SMALL
 	slot_flags = SLOT_BELT
 	var/list/positive_locations = list()
@@ -140,7 +149,7 @@
 			D.coords = "[M.x]:[M.y]:[M.z]"
 			D.time = stationtime2text()
 			D.record_index = positive_locations.len + 1
-			D.material = M.mineral ? M.mineral.display_name : "Rock"
+			D.material = M.mineral ? M.mineral.ore_name : "Rock"
 
 			//find the first artifact and store it
 			if(M.finds.len)
@@ -235,6 +244,7 @@
 	name = "locator device"
 	desc = "Used to scan and locate signals on a particular frequency."
 	var/tracking_freq = PUB_FREQ
+	matter = list(MATERIAL_ALUMINIUM = 1000, MATERIAL_GLASS = 500)
 
 /obj/item/weapon/pinpointer/radio/acquire_target()
 	var/turf/T = get_turf(src)

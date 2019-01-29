@@ -8,13 +8,13 @@
 	icon_state = "box_0"
 	density = 1
 	anchored = 1
-	use_power = 0
+	use_power = POWER_USE_OFF
 	var/obj/item/weapon/circuitboard/circuit = null
 	var/list/components = null
 	var/list/req_components = null
 	var/list/req_component_names = null
 	var/state = 1
-	atom_flags = ATOM_FLAG_CLIMBABLE
+	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_CLIMBABLE
 
 	proc/update_desc()
 		var/D
@@ -52,11 +52,11 @@
 				if(istype(P, /obj/item/weapon/circuitboard))
 					var/obj/item/weapon/circuitboard/B = P
 					if(B.board_type == "machine")
+						if(!user.unEquip(P, src))
+							return
 						playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
 						to_chat(user, "<span class='notice'>You add the circuit board to the frame.</span>")
 						circuit = P
-						user.drop_item()
-						P.loc = src
 						icon_state = "box_2"
 						state = 3
 						components = list()
@@ -84,14 +84,14 @@
 				if(isCrowbar(P))
 					playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
 					state = 2
-					circuit.loc = src.loc
+					circuit.dropInto(loc)
 					circuit = null
 					if(components.len == 0)
 						to_chat(user, "<span class='notice'>You remove the circuit board.</span>")
 					else
 						to_chat(user, "<span class='notice'>You remove the circuit board and other components.</span>")
 						for(var/obj/item/weapon/W in components)
-							W.loc = src.loc
+							W.dropInto(loc)
 					desc = initial(desc)
 					req_components = null
 					components = null
@@ -116,15 +116,15 @@
 
 							for(var/obj/O in src)
 								if(circuit.contain_parts) // things like disposal don't want their parts in them
-									O.loc = new_machine
+									O.forceMove(new_machine)
 								else
-									O.loc = null
+									O.forceMove(null)
 								new_machine.component_parts += O
 
 							if(circuit.contain_parts)
-								circuit.loc = new_machine
+								circuit.forceMove(new_machine)
 							else
-								circuit.loc = null
+								circuit.forceMove(null)
 
 							new_machine.RefreshParts()
 							qdel(src)
@@ -132,7 +132,6 @@
 						if(istype(P, /obj/item))
 							for(var/I in req_components)
 								if(istype(P, I) && (req_components[I] > 0))
-									playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
 									if(isCoil(P))
 										var/obj/item/stack/cable_coil/CP = P
 										if(CP.get_amount() > 1)
@@ -145,12 +144,13 @@
 											req_components[I] -= camt
 											update_desc()
 											break
-									user.drop_item()
-									P.loc = src
+									if(!user.unEquip(P, src))
+										return
 									components += P
 									req_components[I]--
 									update_desc()
 									break
+							playsound(src.loc, 'sound/items/Deconstruct.ogg', 50, 1)
 							to_chat(user, desc)
 							if(P && P.loc != src && !istype(P, /obj/item/stack/cable_coil))
 								to_chat(user, "<span class='warning'>You cannot add that component to the machine!</span>")

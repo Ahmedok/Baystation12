@@ -1,9 +1,9 @@
 
 /obj/item/bodybag/cryobag
 	name = "stasis bag"
-	desc = "A folded, non-reusable bag designed to prevent additional damage to an occupant, especially useful if short on time or in \
+	desc = "A folded, reusable bag designed to prevent additional damage to an occupant, especially useful if short on time or in \
 	a hostile enviroment."
-	icon = 'icons/obj/cryobag.dmi'
+	icon = 'icons/obj/closets/cryobag.dmi'
 	icon_state = "bodybag_folded"
 	origin_tech = list(TECH_BIO = 4)
 	var/stasis_power
@@ -18,9 +18,9 @@
 
 /obj/structure/closet/body_bag/cryobag
 	name = "stasis bag"
-	desc = "A non-reusable plastic bag designed to prevent additional damage to an occupant, especially useful if short on time or in \
+	desc = "A reusable plastic bag designed to prevent additional damage to an occupant, especially useful if short on time or in \
 	a hostile enviroment."
-	icon = 'icons/obj/cryobag.dmi'
+	icon = 'icons/obj/closets/cryobag.dmi'
 	item_path = /obj/item/bodybag/cryobag
 
 	storage_types = CLOSET_STORAGE_MOBS
@@ -52,7 +52,7 @@
 		STOP_PROCESSING(SSobj, src)
 	. = ..()
 
-/obj/structure/closet/body_bag/cryobag/update_icon()
+/obj/structure/closet/body_bag/cryobag/on_update_icon()
 	..()
 	overlays.Cut()
 	var/image/I = image(icon, "indicator[opened]")
@@ -108,4 +108,20 @@
 	name = "used stasis bag"
 	desc = "Pretty useless now.."
 	icon_state = "bodybag_used"
-	icon = 'icons/obj/cryobag.dmi'
+	icon = 'icons/obj/closets/cryobag.dmi'
+
+/obj/structure/closet/body_bag/cryobag/blank
+	stasis_power = 60
+	degradation_time = 1800 //ticks until stasis power degrades, ~5 minutes
+
+/obj/structure/closet/body_bag/cryobag/blank/open()
+	. = ..()
+	new /obj/item/usedcryobag(loc)
+	qdel(src)
+
+/obj/structure/closet/body_bag/cryobag/blank/WillContain()
+	return list(/mob/living/carbon/human/blank)
+
+/obj/structure/closet/body_bag/cryobag/blank/Initialize()
+	. = ..()
+	START_PROCESSING(SSobj, src)

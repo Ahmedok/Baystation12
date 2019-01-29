@@ -15,6 +15,7 @@
 	var/can_absorb = 0							// Whether this grab state is strong enough to, as a changeling, absorb the person you're grabbing.
 	var/shield_assailant = 0					// Whether the person you're grabbing will shield you from bullets.,,
 	var/point_blank_mult = 1					// How much the grab increases point blank damage.
+	var/damage_stage = 1						// Affects how much damage is being dealt using certain actions.
 	var/same_tile = 0							// If the grabbed person and the grabbing person are on the same tile.
 	var/ladder_carry = 0						// If the grabber can carry the grabbed person up or down ladders.
 	var/can_throw = 0							// If the grabber can throw the person grabbed.
@@ -99,22 +100,31 @@
 	let_go_effect(G)
 	G.force_drop()
 
-/datum/grab/proc/process(var/obj/item/grab/G)
-	var/diff_zone = G.target_change()
-	if(diff_zone && G.special_target_functional)
-		special_target_change(G, diff_zone)
-	else
+/datum/grab/proc/on_target_change(var/obj/item/grab/G, old_zone, new_zone)
+	G.special_target_functional = check_special_target(G)
+	if(G.special_target_functional)
+		special_target_change(G, old_zone, new_zone)
 		special_target_effect(G)
 
+/datum/grab/proc/process(var/obj/item/grab/G)
+	special_target_effect(G)
 	process_effect(G)
 
 /datum/grab/proc/throw_held(var/obj/item/grab/G)
 	var/mob/living/carbon/human/affecting = G.affecting
 
 	if(can_throw)
+		. = affecting
+		var/mob/thrower = G.loc
+
 		animate(affecting, pixel_x = 0, pixel_y = 0, 4, 1)
 		qdel(G)
-		return affecting
+
+		// check if we're grabbing with our inactive hand
+		G = thrower.get_inactive_hand()
+		if(!istype(G))	return
+		qdel(G)
+		return
 	return null
 
 /datum/grab/proc/hit_with_grab(var/obj/item/grab/G)
@@ -264,8 +274,8 @@
 
 	if(affecting.incapacitated(INCAPACITATION_KNOCKOUT | INCAPACITATION_STUNNED))
 		to_chat(G.assailant, "<span class='warning'>You can't resist in your current state!</span>")
-
-	var/break_strength = breakability + size_difference(affecting, assailant)
+	var/skill_mod = Clamp(affecting.get_skill_difference(SKILL_COMBAT, assailant), -1, 1)
+	var/break_strength = breakability + size_difference(affecting, assailant) + skill_mod
 
 	if(affecting.incapacitated(INCAPACITATION_ALL))
 		break_strength--
@@ -290,10 +300,3 @@
 	return mob_size_difference(A.mob_size, B.mob_size)
 
 /datum/grab/proc/moved_effect(var/obj/item/grab/G)
-
-/client/proc/Process_Grab()
-	//if we are being grabbed
-	if(isliving(mob))
-		var/mob/living/L = mob
-		if(!L.canmove && L.grabbed_by.len)
-			L.resist() //shortcut for resisting grabs

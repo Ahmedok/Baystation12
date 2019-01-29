@@ -6,7 +6,7 @@
 	icon_state = "object"
 	known = 0
 
-	generic_waypoints = list(
+	initial_generic_waypoints = list(
 		"nav_magshield_1",
 		"nav_magshield_2",
 		"nav_magshield_3",
@@ -48,8 +48,8 @@
 	icon_state = "maggen"
 	anchored = 1
 	density = 1
-	light_range = 3
-	light_power = 3
+	light_outer_range = 3
+	light_max_bright = 1
 	light_color = "#ffea61"
 	var/heavy_range = 10
 	var/lighter_range = 20
@@ -87,8 +87,8 @@
 	if (being_stopped)
 		to_chat(user, "<span class='notice'> Somebody is already interacting with \the [src].</span>")
 		return
-	if(istype(W, /obj/item/stack/rods))
-		var/obj/item/stack/rods/R = W
+	if(istype(W, /obj/item/stack/material/rods))
+		var/obj/item/stack/material/rods/R = W
 		to_chat(user, "<span class='notice'> You start to stick [R.singular_name] into rotating hands to make them stuck.</span>")
 		being_stopped = 1
 		if (!do_after(user, 100, src))
@@ -124,13 +124,13 @@
 	icon_state = "nav_light_green"
 	anchored = 1
 	density = 1
-	light_range = 10
-	light_power = 10
+	light_outer_range = 10
+	light_max_bright = 1
 	light_color = "#00ee00"
 
 /obj/structure/magshield/nav_light/New()//try make flashing through the process
 	..()
-	set_light(light_range, light_power, light_color)
+	set_light(light_max_bright, light_outer_range / 6, light_outer_range, 2, light_color)
 
 /obj/structure/magshield/nav_light/red
 	desc = "Large and bright light regularly emitting red flashes."

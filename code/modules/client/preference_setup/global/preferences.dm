@@ -22,6 +22,9 @@ GLOBAL_VAR_CONST(PREF_CTRL_SHIFT_CLICK, "ctrl shift click")
 GLOBAL_VAR_CONST(PREF_HEAR, "Hear")
 GLOBAL_VAR_CONST(PREF_SILENT, "Silent")
 GLOBAL_VAR_CONST(PREF_SHORTHAND, "Shorthand")
+GLOBAL_VAR_CONST(PREF_NEVER, "Never")
+GLOBAL_VAR_CONST(PREF_NON_ANTAG, "Non-Antag Only")
+GLOBAL_VAR_CONST(PREF_ALWAYS, "Always")
 
 var/list/_client_preferences
 var/list/_client_preferences_by_key
@@ -92,9 +95,9 @@ var/list/_client_preferences_by_type
 /datum/client_preference/play_lobby_music/changed(var/mob/preference_mob, var/new_value)
 	if(new_value == GLOB.PREF_YES)
 		if(isnewplayer(preference_mob))
-			GLOB.using_map.lobby_music.play_to(preference_mob)
+			GLOB.using_map.lobby_track.play_to(preference_mob)
 	else
-		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 85, channel = 1))
+		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 85, channel = GLOB.lobby_sound_channel))
 
 /datum/client_preference/play_ambiance
 	description ="Play ambience"
@@ -102,8 +105,8 @@ var/list/_client_preferences_by_type
 
 /datum/client_preference/play_ambiance/changed(var/mob/preference_mob, var/new_value)
 	if(new_value == GLOB.PREF_NO)
-		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 0, channel = 1))
-		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 0, channel = 2))
+		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 0, channel = GLOB.lobby_sound_channel))
+		sound_to(preference_mob, sound(null, repeat = 0, wait = 0, volume = 0, channel = GLOB.ambience_sound_channel))
 
 /datum/client_preference/ghost_ears
 	description ="Ghost ears"
@@ -194,10 +197,27 @@ var/list/_client_preferences_by_type
 	key = "HARDSUIT_ACTIVATION"
 	options = list(GLOB.PREF_MIDDLE_CLICK, GLOB.PREF_CTRL_CLICK, GLOB.PREF_ALT_CLICK, GLOB.PREF_CTRL_SHIFT_CLICK)
 
+/datum/client_preference/holster_on_intent
+	description = "Draw gun based on intent"
+	key = "HOLSTER_ON_INTENT"
+
 /datum/client_preference/show_credits
 	description = "Show End Titles"
 	key = "SHOW_CREDITS"
 
+/datum/client_preference/play_instruments
+	description ="Play instruments"
+	key = "SOUND_INSTRUMENTS"
+
+/datum/client_preference/give_personal_goals
+	description = "Give Personal Goals"
+	key = "PERSONAL_GOALS"
+	options = list(GLOB.PREF_NEVER, GLOB.PREF_NON_ANTAG, GLOB.PREF_ALWAYS)
+
+/datum/client_preference/show_department_goals
+	description = "Show Departmental Goals"
+	key = "DEPT_GOALS"
+	options = list(GLOB.PREF_SHOW, GLOB.PREF_HIDE)
 
 /********************
 * General Staff Preferences *

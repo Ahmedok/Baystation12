@@ -309,14 +309,14 @@
 			if (prob(overload_chance))
 				A.overload_lighting()
 			if (prob(failure_chance))
-				A.set_broken()
+				A.set_broken(TRUE)
 			if(prob(reboot_chance))
 				A.energy_fail(rand(30,60))
 
 // Proc: update_icon()
 // Parameters: None
 // Description: Allows us to use special icon overlay for critical SMESs
-/obj/machinery/power/smes/buildable/update_icon()
+/obj/machinery/power/smes/buildable/on_update_icon()
 	if (failing)
 		overlays.Cut()
 		overlays += image('icons/obj/power.dmi', "smes-crit")
@@ -390,11 +390,10 @@
 				if (failure_probability && prob(failure_probability))
 					total_system_failure(failure_probability, user)
 					return
-
+				if(!user.unEquip(W, src))
+					return
 				to_chat(usr, "You install the coil into the SMES unit!")
-				user.drop_item()
 				component_parts += W
-				W.forceMove(src)
 				recalc_coils()
 			else
 				to_chat(usr, "<span class='warning'>You can't insert more coils to this SMES unit!</span>")

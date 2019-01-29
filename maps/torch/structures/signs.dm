@@ -1,7 +1,6 @@
 /obj/structure/sign/dedicationplaque
 	name = "\improper SEV Torch dedication plaque"
 	desc = "S.E.V. Torch - Mako Class - Sol Expeditionary Corps Registry 95519 - Shiva Fleet Yards, Mars - First Vessel To Bear The Name - Launched 2560 - Sol Central Government - 'Never was anything great achieved without danger.'"
-	icon = 'maps/torch/icons/obj/solgov-decals.dmi'
 	icon_state = "lightplaque"
 
 /obj/structure/sign/ecplaque
@@ -35,10 +34,24 @@
 		to_chat(usr, directives)
 		return TOPIC_HANDLED
 
+/obj/structure/sign/ecplaque/attackby(var/obj/I, var/mob/user)
+	if(istype(I, /obj/item/grab))
+		var/obj/item/grab/G = I
+		if(!ishuman(G.affecting))
+			return
+		G.affecting.apply_damage(5, BRUTE, BP_HEAD, used_weapon="Metal Plaque")
+		visible_message("<span class='warning'>[G.assailant] smashes [G.assailant] into \the [src] face-first!</span>")
+		playsound(get_turf(src), 'sound/weapons/tablehit1.ogg', 50)
+		to_chat(G.affecting, "<span class='danger'>[directives]</span>")
+		admin_attack_log(user, G.affecting, "educated victim on \the [src].", "Was educated on \the [src].", "used \a [src] to educate")
+		G.force_drop()
+	else
+		..()
+
 /obj/effect/floor_decal/scglogo
 	alpha = 230
 	icon = 'maps/torch/icons/obj/solgov_floor.dmi'
-	icon_state = "1,1"
+	icon_state = "center"
 
 /obj/structure/sign/solgov
 	name = "\improper SolGov Seal"

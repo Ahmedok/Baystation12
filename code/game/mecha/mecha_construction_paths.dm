@@ -272,7 +272,7 @@
 
 	spawn_result()
 		..()
-		feedback_inc("mecha_ripley_created",1)
+		SSstatistics.add_field("mecha_ripley_created",1)
 		return
 
 
@@ -554,7 +554,7 @@
 
 	spawn_result()
 		..()
-		feedback_inc("mecha_gygax_created",1)
+		SSstatistics.add_field("mecha_gygax_created",1)
 		return
 
 /datum/construction/mecha/firefighter_chassis
@@ -569,7 +569,6 @@
 	custom_action(step, atom/used_atom, mob/user)
 		user.visible_message("[user] has connected [used_atom] to [holder].", "You connect [used_atom] to [holder]")
 		holder.overlays += used_atom.icon_state+"+o"
-		user.drop_item()
 		qdel(used_atom)
 		return 1
 
@@ -778,7 +777,7 @@
 
 	spawn_result()
 		..()
-		feedback_inc("mecha_firefighter_created",1)
+		SSstatistics.add_field("mecha_firefighter_created",1)
 		return
 
 /datum/construction/mecha/durand_chassis
@@ -1058,7 +1057,7 @@
 
 	spawn_result()
 		..()
-		feedback_inc("mecha_durand_created",1)
+		SSstatistics.add_field("mecha_durand_created",1)
 		return
 
 
@@ -1291,5 +1290,5 @@
 
 	spawn_result()
 		..()
-		feedback_inc("mecha_odysseus_created",1)
+		SSstatistics.add_field("mecha_odysseus_created",1)
 		return

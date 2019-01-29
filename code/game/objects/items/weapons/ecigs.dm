@@ -27,6 +27,9 @@
 		cigcell = new cell_type
 	ec_cartridge = new cartridge_type(src)
 
+/obj/item/clothing/mask/smokable/ecig/get_cell()
+	return cigcell
+
 /obj/item/clothing/mask/smokable/ecig/simple
 	name = "cheap electronic cigarette"
 	desc = "A cheap Lucky 1337 electronic cigarette, styled like a traditional cigarette."
@@ -125,11 +128,11 @@ obj/item/clothing/mask/smokable/ecig/util/examine(mob/user)
 				return
 			ec_cartridge.reagents.trans_to_mob(C, REM, CHEM_INGEST, 0.4) // Most of it is not inhaled... balance reasons.
 
-/obj/item/clothing/mask/smokable/ecig/update_icon()
+/obj/item/clothing/mask/smokable/ecig/on_update_icon()
 	if (active)
 		item_state = icon_on
 		icon_state = icon_on
-		set_light(brightness_on)
+		set_light(0.6, 0.5, brightness_on)
 	else if (ec_cartridge)
 		set_light(0)
 		item_state = icon_off
@@ -149,9 +152,7 @@ obj/item/clothing/mask/smokable/ecig/util/examine(mob/user)
 	if(istype(I, /obj/item/weapon/reagent_containers/ecig_cartridge))
 		if (ec_cartridge)//can't add second one
 			to_chat(user, "<span class='notice'>A cartridge has already been installed.</span> ")
-		else//fits in new one
-			user.remove_from_mob(I)
-			I.forceMove(src)//I.loc=src
+		else if(user.unEquip(I, src))//fits in new one
 			ec_cartridge = I
 			update_icon()
 			to_chat(user, "<span class='notice'>You insert \the [I] into \the [src].</span> ")
@@ -215,9 +216,9 @@ obj/item/clothing/mask/smokable/ecig/util/examine(mob/user)
 	w_class = ITEM_SIZE_TINY
 	icon = 'icons/obj/ecig.dmi'
 	icon_state = "ecartridge"
-	matter = list("metal" = 50, "glass" = 10)
+	matter = list(MATERIAL_ALUMINIUM = 50, MATERIAL_GLASS = 10)
 	volume = 20
-	atom_flags = ATOM_FLAG_OPEN_CONTAINER
+	atom_flags = ATOM_FLAG_NO_TEMP_CHANGE | ATOM_FLAG_OPEN_CONTAINER
 
 /obj/item/weapon/reagent_containers/ecig_cartridge/New()
 	create_reagents(volume)

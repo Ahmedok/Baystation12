@@ -1,8 +1,10 @@
 GLOBAL_LIST_INIT(registered_weapons, list())
+GLOBAL_LIST_INIT(registered_cyborg_weapons, list())
 
 /obj/item/weapon/gun/energy
 	name = "energy gun"
 	desc = "A basic energy-based gun."
+	icon = 'icons/obj/guns/basic_energy.dmi'
 	icon_state = "energy"
 	fire_sound = 'sound/weapons/Taser.ogg'
 	fire_sound_text = "laser blast"
@@ -20,8 +22,6 @@ GLOBAL_LIST_INIT(registered_weapons, list())
 	var/use_external_power = 0 //if set, the weapon will look for an external power source to draw from, otherwise it recharges magically
 	var/recharge_time = 4
 	var/charge_tick = 0
-	var/icon_rounder = 25
-	combustion = 1
 
 /obj/item/weapon/gun/energy/switch_firemodes()
 	. = ..()
@@ -32,8 +32,8 @@ GLOBAL_LIST_INIT(registered_weapons, list())
 	..()
 	update_icon()
 
-/obj/item/weapon/gun/energy/New()
-	..()
+/obj/item/weapon/gun/energy/Initialize()
+	. = ..()
 	if(cell_type)
 		power_supply = new cell_type(src)
 	else
@@ -46,6 +46,9 @@ GLOBAL_LIST_INIT(registered_weapons, list())
 	if(self_recharge)
 		STOP_PROCESSING(SSobj, src)
 	return ..()
+
+/obj/item/weapon/gun/energy/get_cell()
+	return power_supply
 
 /obj/item/weapon/gun/energy/Process()
 	if(self_recharge) //Every [recharge_time] ticks, recharge a shot for the cyborg
@@ -94,7 +97,7 @@ GLOBAL_LIST_INIT(registered_weapons, list())
 	to_chat(user, "Has [shots_remaining] shot\s remaining.")
 	return
 
-/obj/item/weapon/gun/energy/update_icon()
+/obj/item/weapon/gun/energy/on_update_icon()
 	..()
 	if(charge_meter && power_supply)
 		var/ratio = power_supply.percent()
@@ -103,7 +106,7 @@ GLOBAL_LIST_INIT(registered_weapons, list())
 		if(power_supply.charge < charge_cost)
 			ratio = 0
 		else
-			ratio = max(round(ratio, icon_rounder), icon_rounder)
+			ratio = max(round(ratio, 25), 25)
 
 		if(modifystate)
 			icon_state = "[modifystate][ratio]"

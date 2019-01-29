@@ -8,6 +8,7 @@
 	anchored = 1
 	max_w_class = ITEM_SIZE_NORMAL
 	max_storage_space = DEFAULT_LARGEBOX_STORAGE
+	use_sound = 'sound/effects/closet_open.ogg'
 	var/shattered = 0
 	var/list/ui_users = list()
 
@@ -100,17 +101,17 @@
 			if(choice && choice == "Yes")
 				var/mob/living/carbon/human/vox/vox = new(get_turf(src),SPECIES_VOX)
 				vox.gender = user.gender
-				raiders.equip(vox)
+				GLOB.raiders.equip(vox)
 				if(user.mind)
 					user.mind.transfer_to(vox)
 				spawn(1)
 					var/newname = sanitizeSafe(input(vox,"Enter a name, or leave blank for the default name.", "Name change","") as text, MAX_NAME_LEN)
 					if(!newname || newname == "")
-						var/datum/language/L = all_languages[vox.species.default_language]
-						newname = L.get_random_name()
+						var/decl/cultural_info/voxculture = SSculture.get_culture(CULTURE_VOX_RAIDER)
+						newname = voxculture.get_random_name()
 					vox.real_name = newname
 					vox.SetName(vox.real_name)
-					raiders.update_access(vox)
+					GLOB.raiders.update_access(vox)
 				qdel(user)
 
 /obj/item/weapon/mirror

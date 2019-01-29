@@ -4,7 +4,7 @@
 	icon = 'icons/mob/bot/medibot.dmi'
 	icon_state = "medibot0"
 	req_one_access = list(access_medical, access_robotics)
-	botcard_access = list(access_medical, access_morgue, access_surgery, access_chemistry, access_virology, access_genetics)
+	botcard_access = list(access_medical, access_morgue, access_surgery, access_chemistry, access_virology)
 	var/skin = null //Set to "tox", "ointment" or "o2" for the other two firstaid kits.
 
 	//AI vars
@@ -103,8 +103,8 @@
 			to_chat(user, "<span class='notice'>There is already a beaker loaded.</span>")
 			return
 
-		user.drop_item()
-		O.loc = src
+		if(!user.unEquip(O, src))
+			return
 		reagent_glass = O
 		to_chat(user, "<span class='notice'>You insert [O].</span>")
 		return
@@ -212,7 +212,7 @@
 		new /obj/item/robot_parts/l_arm(Tsec)
 
 	if(reagent_glass)
-		reagent_glass.loc = Tsec
+		reagent_glass.forceMove(Tsec)
 		reagent_glass = null
 
 	var/datum/effect/effect/system/spark_spread/s = new /datum/effect/effect/system/spark_spread
@@ -267,7 +267,6 @@
 	qdel(S)
 	user.put_in_hands(A)
 	to_chat(user, "<span class='notice'>You add the robot arm to the first aid kit.</span>")
-	user.drop_from_inventory(src)
 	qdel(src)
 
 /obj/item/weapon/firstaid_arm_assembly
@@ -298,7 +297,6 @@
 		switch(build_step)
 			if(0)
 				if(istype(W, /obj/item/device/healthanalyzer))
-					user.drop_item()
 					qdel(W)
 					build_step++
 					to_chat(user, "<span class='notice'>You add the health sensor to [src].</span>")
@@ -307,7 +305,6 @@
 
 			if(1)
 				if(isprox(W))
-					user.drop_item()
 					qdel(W)
 					to_chat(user, "<span class='notice'>You complete the Medibot! Beep boop.</span>")
 					var/turf/T = get_turf(src)
@@ -315,5 +312,4 @@
 					S.skin = skin
 					S.SetName(created_name)
 					S.update_icons() // apply the skin
-					user.drop_from_inventory(src)
 					qdel(src)
