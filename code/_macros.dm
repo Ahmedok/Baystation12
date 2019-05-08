@@ -79,20 +79,6 @@
 
 #define isopenspace(A) istype(A, /turf/simulated/open)
 
-#define isWrench(A) istype(A, /obj/item/weapon/wrench)
-
-#define isWelder(A) istype(A, /obj/item/weapon/weldingtool)
-
-#define isCoil(A) istype(A, /obj/item/stack/cable_coil)
-
-#define isWirecutter(A) istype(A, /obj/item/weapon/wirecutters)
-
-#define isScrewdriver(A) istype(A, /obj/item/weapon/screwdriver)
-
-#define isMultitool(A) istype(A, /obj/item/device/multitool)
-
-#define isCrowbar(A) istype(A, /obj/item/weapon/crowbar)
-
 #define isPlunger(A) istype(A, /obj/item/clothing/mask/plunger) || istype(A, /obj/item/device/plunger/robot)
 
 #define sequential_id(key) uniqueness_repository.Generate(/datum/uniqueness_generator/id_sequential, key)
@@ -186,3 +172,15 @@
 #define SPAN_WARNING(X) "<span class='warning'>[X]</span>"
 
 #define SPAN_DANGER(X) "<span class='danger'>[X]</span>"
+
+#define SPAN_OCCULT(X) "<span class='cult'>[X]</span>"
+
+#define FONT_SMALL(X) "<font size='1'>[X]</font>"
+
+#define FONT_NORMAL(X) "<font size='2'>[X]</font>"
+
+#define FONT_LARGE(X) "<font size='3'>[X]</font>"
+
+#define FONT_HUGE(X) "<font size='4'>[X]</font>"
+
+#define FONT_GIANT(X) "<font size='5'>[X]</font>"

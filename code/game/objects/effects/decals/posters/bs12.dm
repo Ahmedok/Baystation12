@@ -214,11 +214,6 @@
 	name = "Responsible medbay habits, No #3"
 	desc = "A safety poster with a purple-haired surgeon. She looks a bit cross. \"Let the surgeons do their work. NEVER replace or remove a surgery tool from where the surgeon put it.\""
 
-/decl/poster/bay_44
-	icon_state="bsposter44"
-	name = "Time for a drink?"
-	desc = "This poster depicts a friendly-looking alien holding a tray of drinks."
-
 /decl/poster/bay_45
 	icon_state="bsposter45"
 	name = "Responsible engineering habits, No #1"
@@ -291,5 +286,5 @@
 
 /decl/poster/bay_59
 	icon_state="bsposter59"
-	name = "poster - Miss Science 2558"
+	name = "poster - Miss Science 2299"
 	desc = "A large piece of space-resistant printed paper. This pin-up poster depicts a woman wearing a corporate labcoat, a bikini, and a sheepish grin. She's shyly posing atop some highly specialized research equipment."

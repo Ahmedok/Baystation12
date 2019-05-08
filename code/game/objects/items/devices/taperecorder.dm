@@ -228,6 +228,8 @@
 
 	if(usr.incapacitated())
 		return
+	if(!mytape)
+		return
 	if(emagged || mytape.ruined)
 		audible_message("<span class='warning'>The tape recorder makes a scratchy noise.</span>")
 		return
@@ -516,7 +518,8 @@
 	used_capacity = min(used_capacity,index)
 
 //Random colour tapes
-/obj/item/device/tape/random/New()
+/obj/item/device/tape/random/Initialize()
+	. = ..()
 	icon_state = "tape_[pick("white", "blue", "red", "yellow", "purple")]"
 
 /obj/item/device/tape/loose

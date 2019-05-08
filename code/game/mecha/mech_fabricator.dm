@@ -1,6 +1,6 @@
 /obj/machinery/mecha_part_fabricator
 	name = "Exosuit Fabricator"
-	desc = "A machine used for construction of robotics and mechas."
+	desc = "A machine used for construction of robotics and mechs."
 	icon = 'icons/obj/robotics.dmi'
 	icon_state = "fab-idle"
 	density = 1
@@ -305,6 +305,10 @@
 			mattype = /obj/item/stack/material/steel
 		if(MATERIAL_GLASS)
 			mattype = /obj/item/stack/material/glass
+		if(MATERIAL_ALUMINIUM)
+			mattype = /obj/item/stack/material/aluminium
+		if(MATERIAL_PLASTIC)
+			mattype = /obj/item/stack/material/plastic
 		if(MATERIAL_GOLD)
 			mattype = /obj/item/stack/material/gold
 		if(MATERIAL_SILVER)

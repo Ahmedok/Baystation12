@@ -1,6 +1,6 @@
 /obj/structure/closet/secure_closet/scientist
 	name = "scientist's locker"
-	req_one_access = list(access_tox,access_tox_storage)
+	req_access = list(list(access_tox,access_tox_storage))
 	closet_appearance = /decl/closet_appearance/secure_closet/expedition/science
 
 /obj/structure/closet/secure_closet/scientist/WillContain()
@@ -11,7 +11,7 @@
 		/obj/item/clothing/shoes/white,
 		/obj/item/device/radio/headset/headset_sci,
 		/obj/item/clothing/mask/gas,
-		/obj/item/weapon/clipboard
+		/obj/item/weapon/material/clipboard
 	)
 
 /obj/structure/closet/secure_closet/xenobio
@@ -28,7 +28,7 @@
 		/obj/item/device/radio/headset/headset_sci,
 		/obj/item/clothing/mask/gas,
 		/obj/item/clothing/gloves/latex,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/weapon/storage/belt/general
 	)
 
@@ -40,6 +40,7 @@
 /obj/structure/closet/secure_closet/RD/WillContain()
 	return list(
 		/obj/item/clothing/suit/bio_suit/scientist = 2,
+		/obj/item/clothing/head/bio_hood/scientist = 2,
 		/obj/item/clothing/under/rank/research_director,
 		/obj/item/clothing/under/rank/research_director/rdalt,
 		/obj/item/clothing/under/rank/research_director/dress_rd,
@@ -51,7 +52,7 @@
 		/obj/item/device/radio/headset/heads/rd,
 		/obj/item/clothing/mask/gas,
 		/obj/item/device/flash,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/clothing/suit/storage/toggle/labcoat/rd
 	)
 

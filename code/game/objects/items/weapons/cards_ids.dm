@@ -108,6 +108,15 @@
 	origin_tech = list(TECH_MAGNET = 2, TECH_ILLEGAL = 2)
 	var/uses = 10
 
+	var/static/list/card_choices = list(
+							/obj/item/weapon/card/emag,
+							/obj/item/weapon/card/union,
+							/obj/item/weapon/card/data,
+							/obj/item/weapon/card/data/full_color,
+							/obj/item/weapon/card/data/disk,
+							/obj/item/weapon/card/id,
+						) //Should be enough of a selection for most purposes
+
 var/const/NO_EMAG_ACT = -50
 /obj/item/weapon/card/emag/resolve_attackby(atom/A, mob/user)
 	var/used_uses = A.emag_act(uses, user, src)
@@ -126,6 +135,26 @@ var/const/NO_EMAG_ACT = -50
 		qdel(src)
 
 	return 1
+
+/obj/item/weapon/card/emag/Initialize()
+	. = ..()
+	if(length(card_choices) && !card_choices[card_choices[1]])
+		card_choices = generate_chameleon_choices(card_choices)
+
+/obj/item/weapon/card/emag/verb/change(picked in card_choices)
+	set name = "Change Cryptographic Sequencer Appearance"
+	set category = "Chameleon Items"
+	set src in usr
+
+	if(!ispath(card_choices[picked]))
+		return
+
+	disguise(card_choices[picked], usr)
+
+/obj/item/weapon/card/emag/examine(mob/user)
+	. = ..()
+	if(. && user.skill_check(SKILL_DEVICES,SKILL_ADEPT))
+		to_chat(user, SPAN_WARNING("This ID card has some non-standard modifications commonly used to gain illicit access to computer systems."))
 
 /obj/item/weapon/card/id
 	name = "identification card"
@@ -197,7 +226,7 @@ var/const/NO_EMAG_ACT = -50
 			return TOPIC_HANDLED
 
 /obj/item/weapon/card/id/examine(mob/user)
-	..()
+	. = ..()
 	to_chat(user, "It says '[get_display_name()]'.")
 	if(in_range(user, src))
 		show(user)
@@ -373,6 +402,39 @@ var/const/NO_EMAG_ACT = -50
 	assignment = "Emergency Response Team"
 
 /obj/item/weapon/card/id/centcom/ERT/New()
+	..()
+	access |= get_all_station_access()
+
+/obj/item/weapon/card/id/foundation
+	name = "\improper Foundation warrant card"
+	desc = "A warrant card in a handsome leather case."
+	assignment = "Field Agent"
+	icon_state = "warrantcard"
+
+/obj/item/weapon/card/id/foundation/examine(var/mob/user)
+	. = ..(user, 1)
+	if(. && isliving(user))
+		var/mob/living/M = user
+		if(M.psi)
+			to_chat(user, SPAN_WARNING("There is a psionic compulsion surrounding \the [src], forcing anyone who reads it to perceive it as a legitimate document of authority. The actual text just reads 'I can do what I want.'"))
+		else
+			to_chat(user, SPAN_NOTICE("This is the real deal, stamped by [GLOB.using_map.boss_name]. It gives the holder the full authority to pursue their goals. You believe it implicitly."))
+
+/obj/item/weapon/card/id/foundation/attack_self(var/mob/living/user)
+	. = ..()
+	if(istype(user))
+		for(var/mob/M in viewers(world.view, get_turf(user))-user)
+			if(user.psi && isliving(M))
+				var/mob/living/L = M
+				if(!L.psi)
+					to_chat(L, SPAN_NOTICE("This is the real deal, stamped by [GLOB.using_map.boss_name]. It gives the holder the full authority to pursue their goals. You believe \the [user] implicitly."))
+					continue
+			to_chat(M, SPAN_WARNING("There is a psionic compulsion surrounding \the [src] in a flicker of indescribable light."))
+
+/obj/item/weapon/card/id/foundation/on_update_icon()
+	return
+
+/obj/item/weapon/card/id/foundation/New()
 	..()
 	access |= get_all_station_access()
 

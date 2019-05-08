@@ -18,6 +18,12 @@
 	description = "Yarr."
 	suffixes = list("smugglers/smugglers.dmm")
 	cost = 1
+	area_usage_test_exempted_root_areas = list(/area/smugglers)
+	apc_test_exempt_areas = list(
+		/area/smugglers/base = NO_SCRUBBER,
+		/area/smugglers/dorms = NO_SCRUBBER|NO_VENT,
+		/area/smugglers/office = NO_SCRUBBER|NO_VENT
+	)
 
 /obj/effect/shuttle_landmark/nav_asteroid_base/nav1
 	name = "Abandoned Asteroid Base Navpoint #1"
@@ -68,7 +74,7 @@
 		new /datum/atom_creator/simple(/obj/item/weapon/reagent_containers/syringe/steroid, 10),
 		new /datum/atom_creator/weighted(list(/obj/item/weapon/reagent_containers/food/drinks/cans/cola, /obj/item/weapon/reagent_containers/food/drinks/cans/waterbottle, /obj/item/weapon/reagent_containers/food/drinks/cans/dr_gibb)),
 		new /datum/atom_creator/simple(/obj/item/clothing/glasses/eyepatch, 30),
-		new /datum/atom_creator/simple(/obj/item/clothing/gloves/duty, 80),
+		new /datum/atom_creator/simple(/obj/item/clothing/gloves/thick/duty, 80),
 		new /datum/atom_creator/simple(/obj/item/clothing/mask/balaclava/tactical, 30))
 
 /obj/random/ore

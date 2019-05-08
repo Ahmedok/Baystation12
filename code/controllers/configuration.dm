@@ -157,6 +157,8 @@ var/list/gamemode_cache = list()
 	var/comms_password = ""
 	var/ban_comms_password = null
 	var/list/forbidden_versions = list() // Clients with these byond versions will be autobanned. Format: string "byond_version.byond_build"; separate with ; in config, e.g. 512.1234;512.1235
+	var/minimum_byond_version = 0
+	var/minimum_byond_build = 0
 
 	var/login_export_addr = null
 
@@ -221,6 +223,8 @@ var/list/gamemode_cache = list()
 	var/max_gear_cost = 10 // Used in chargen for accessory loadout limit. 0 disables loadout, negative allows infinite points.
 
 	var/allow_ic_printing = TRUE //Whether players should be allowed to print IC circuits from scripts.
+
+	var/allow_unsafe_narrates = FALSE //Whether admins can use unsanitized narration; when true, allows HTML etc.
 
 /datum/configuration/New()
 	var/list/L = typesof(/datum/game_mode) - /datum/game_mode
@@ -337,13 +341,9 @@ var/list/gamemode_cache = list()
 
 				if ("log_hrefs")
 					config.log_hrefs = 1
-
+				
 				if ("log_runtime")
 					config.log_runtime = 1
-					var/newlog = file("data/logs/runtimes/runtime-[time2text(world.realtime, "YYYY-MM-DD")].log")
-					if(runtime_diary != newlog)
-						to_world_log("Now logging runtimes to data/logs/runtimes/runtime-[time2text(world.realtime, "YYYY-MM-DD")].log")
-						runtime_diary = newlog
 
 				if ("generate_asteroid")
 					config.generate_map = 1
@@ -609,6 +609,12 @@ var/list/gamemode_cache = list()
 
 				if("forbidden_versions")
 					config.forbidden_versions = splittext(value, ";")
+				
+				if("minimum_byond_version")
+					config.minimum_byond_version = text2num(value)
+
+				if("minimum_byond_build")
+					config.minimum_byond_build = text2num(value)
 
 				if("login_export_addr")
 					config.login_export_addr = value
@@ -741,6 +747,9 @@ var/list/gamemode_cache = list()
 					player_limit = text2num(value)
 				if("hub")
 					world.update_hub_visibility()
+
+				if ("allow_unsafe_narrates")
+					config.allow_unsafe_narrates = TRUE
 
 				else
 					log_misc("Unknown setting in configuration: '[name]'")

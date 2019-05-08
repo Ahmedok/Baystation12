@@ -339,6 +339,7 @@
 
 	SSticker.mode.handle_latejoin(character)
 	GLOB.universe.OnPlayerLatejoin(character)
+	spawnpoint.after_join(character)
 	if(job.create_record)
 		if(character.mind.assigned_role != "Robot")
 			CreateModularRecord(character)
@@ -349,7 +350,7 @@
 		matchmaker.do_matchmaking()
 	log_and_message_admins("has joined the round as [character.mind.assigned_role].", character)
 
-	if(character.cannot_stand())
+	if(character.needs_wheelchair())
 		equip_wheelchair(character)
 
 	qdel(src)
@@ -397,7 +398,7 @@
 	if(LAZYLEN(job_summaries))
 		dat += job_summaries
 	else
-		dat += "No available positions."
+		dat += "<tr><td>No available positions.</td></tr>"
 	// END TORCH JOBS
 
 	// SUBMAP JOBS
@@ -463,11 +464,10 @@
 	new_character.lastarea = get_area(spawn_turf)
 
 	if(GLOB.random_players)
-		new_character.gender = pick(MALE, FEMALE)
+		client.prefs.gender = pick(MALE, FEMALE)
 		client.prefs.real_name = random_name(new_character.gender)
 		client.prefs.randomize_appearance_and_body_for(new_character)
-	else
-		client.prefs.copy_to(new_character)
+	client.prefs.copy_to(new_character)
 
 	sound_to(src, sound(null, repeat = 0, wait = 0, volume = 85, channel = GLOB.lobby_sound_channel))// MAD JAMS cant last forever yo
 
@@ -485,7 +485,6 @@
 			mind.gen_relations_info = client.prefs.relations_info["general"]
 		mind.transfer_to(new_character)					//won't transfer key since the mind is not active
 
-	new_character.SetName(real_name)
 	new_character.dna.ready_dna(new_character)
 	new_character.dna.b_type = client.prefs.b_type
 	new_character.sync_organ_dna()
@@ -566,3 +565,12 @@ mob/new_player/MayRespawn()
 
 /mob/new_player/say(var/message)
 	sanitize_and_communicate(/decl/communication_channel/ooc, client, message)
+
+/mob/new_player/verb/next_lobby_track()
+	set name = "Play Different Lobby Track"
+	set category = "OOC"
+
+	if(get_preference_value(/datum/client_preference/play_lobby_music) == GLOB.PREF_NO)
+		return
+	var/music_track/new_track = GLOB.using_map.get_lobby_track(GLOB.using_map.lobby_track.type)
+	new_track.play_to(src)

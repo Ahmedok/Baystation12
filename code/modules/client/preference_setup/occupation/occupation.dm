@@ -70,9 +70,8 @@
 
 	pref.skills_allocated = pref.sanitize_skills(pref.skills_allocated)		//this proc also automatically computes and updates points_by_job
 
-	var/jobs_by_type = decls_repository.get_decls(GLOB.using_map.allowed_jobs)
-	for(var/job_type in jobs_by_type)
-		var/datum/job/job = jobs_by_type[job_type]
+	for(var/job_type in SSjobs.types_to_datums)
+		var/datum/job/job = SSjobs.types_to_datums[job_type]
 		var/alt_title = pref.player_alt_titles[job.title]
 		if(alt_title && !(alt_title in job.alt_titles))
 			pref.player_alt_titles -= job.title
@@ -262,23 +261,23 @@
 		if(LAZYLEN(removing_ranks))
 			pref.ranks -= removing_ranks
 
+	var/datum/species/S = preference_species()
 	for(var/job_name in SSjobs.titles_to_datums)
 
 		var/datum/job/job = SSjobs.get_by_title(job_name)
 
 		var/datum/mil_branch/player_branch = pref.branches[job.title] ? mil_branches.get_branch(pref.branches[job.title]) : null
-		if(LAZYLEN(job.allowed_branches) && (!player_branch || !(player_branch.type in job.allowed_branches)))
-			player_branch = mil_branches.get_branch(job.allowed_branches[1])
-
-		var/datum/mil_rank/player_rank = (player_branch && pref.ranks[job.title]) ? mil_branches.get_rank(player_branch.name, pref.ranks[job.title]) : null
-		if(player_branch && LAZYLEN(job.allowed_branches) && (!player_rank || !(player_rank.type in job.allowed_ranks)))
-			player_rank = null
-			for(var/rank in job.allowed_ranks)
-				if(rank in player_branch.rank_types)
-					player_rank = mil_branches.get_rank(player_branch.name, rank)
-					break
+		var/branch_rank = job.allowed_branches ? job.get_branch_rank(S) : mil_branches.spawn_branches(S)
+		if(!player_branch || !(player_branch.name in branch_rank))
+			player_branch = LAZYLEN(branch_rank) ? mil_branches.get_branch(branch_rank[1]) : null
 
 		if(player_branch)
+			var/datum/mil_rank/player_rank = pref.ranks[job.title] ? mil_branches.get_rank(player_branch.name, pref.ranks[job.title]) : null
+			var/ranks = branch_rank[player_branch.name] || mil_branches.spawn_ranks(player_branch.name, S)
+			if(!player_rank || !(player_rank.name in ranks))
+				player_rank = LAZYLEN(ranks) ? mil_branches.get_rank(player_branch.name, ranks[1]) : null
+
+			// Now make the assignments
 			pref.branches[job.title] = player_branch.name
 			if(player_rank)
 				pref.ranks[job.title] = player_rank.name
@@ -333,7 +332,7 @@
 		if(istype(job))
 			var/datum/species/S = preference_species()
 			var/list/options = job.allowed_branches ? job.get_branch_rank(S) : mil_branches.spawn_branches(S)
-			var/choice = input(user, "Choose your branch of ser@vice.", CHARACTER_PREFERENCE_INPUT_TITLE) as null|anything in options
+			var/choice = input(user, "Choose your branch of service.", CHARACTER_PREFERENCE_INPUT_TITLE) as null|anything in options
 			if(choice && CanUseTopic(user) && mil_branches.is_spawn_branch(choice, S))
 				pref.branches[job.title] = choice
 				pref.ranks -= job.title
@@ -508,9 +507,9 @@
  */
 /datum/category_item/player_setup_item/proc/prune_job_prefs()
 	var/allowed_titles = list()
-	var/jobs_by_type = decls_repository.get_decls(GLOB.using_map.allowed_jobs)
-	for(var/job_type in jobs_by_type)
-		var/datum/job/job = jobs_by_type[job_type]
+
+	for(var/job_type in SSjobs.types_to_datums)
+		var/datum/job/job = SSjobs.types_to_datums[job_type]
 		allowed_titles += job.title
 
 		if(job.title == pref.job_high)

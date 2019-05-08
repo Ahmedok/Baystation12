@@ -2451,7 +2451,7 @@
 	dir = 5
 	},
 /obj/item/weapon/storage/belt/medical,
-/obj/item/device/healthanalyzer,
+/obj/item/device/scanner/health,
 /obj/item/weapon/storage/pill_bottle/tramadol,
 /obj/item/weapon/storage/pill_bottle/tramadol,
 /obj/item/weapon/storage/pill_bottle/spaceacillin,
@@ -2771,7 +2771,7 @@
 	icon_state = "1-4"
 	},
 /obj/machinery/vending/engineering{
-	req_one_access = list()
+	req_access = list()
 	},
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/colony/engineering)
@@ -2860,7 +2860,7 @@
 	icon_state = "1-4"
 	},
 /obj/machinery/vending/engivend{
-	req_one_access = list()
+	req_access = list()
 	},
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/colony/engineering)
@@ -3365,6 +3365,7 @@
 /obj/item/weapon/reagent_containers/food/drinks/pitcher,
 /obj/item/weapon/reagent_containers/glass/beaker/bowl,
 /obj/item/weapon/reagent_containers/food/condiment/salt,
+/obj/item/weapon/reagent_containers/food/condiment/enzyme,
 /turf/simulated/floor/tiled/freezer,
 /area/map_template/colony/messhall)
 "gf" = (
@@ -4208,11 +4209,10 @@
 /obj/item/ammo_magazine/pistol/small,
 /obj/item/ammo_magazine/pistol/small,
 /obj/item/ammo_magazine/pistol/rubber,
-/obj/item/ammo_magazine/pistol/flash,
-/obj/item/weapon/storage/box/shotgunshells,
-/obj/item/weapon/storage/box/shotgunshells,
-/obj/item/weapon/storage/box/shotgunammo,
-/obj/item/weapon/storage/box/shotgunammo,
+/obj/item/weapon/storage/box/ammo/shotgunshells,
+/obj/item/weapon/storage/box/ammo/shotgunshells,
+/obj/item/weapon/storage/box/ammo/shotgunammo,
+/obj/item/weapon/storage/box/ammo/shotgunammo,
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 4
 	},
@@ -5117,9 +5117,9 @@
 	dir = 8
 	},
 /obj/structure/table/rack,
-/obj/item/device/analyzer,
-/obj/item/device/analyzer,
-/obj/item/device/analyzer,
+/obj/item/device/scanner/gas,
+/obj/item/device/scanner/gas,
+/obj/item/device/scanner/gas,
 /obj/item/clamp,
 /obj/item/clamp,
 /obj/item/clamp,
@@ -6975,13 +6975,10 @@
 /obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 4
 	},
-/obj/structure/closet/emcloset/legacy,
+/obj/structure/closet/emcloset,
+/obj/item/clothing/head/helmet/space/emergency,
 /obj/item/clothing/suit/space/emergency,
 /obj/item/clothing/suit/space/emergency,
-/obj/item/clothing/suit/space/emergency,
-/obj/item/clothing/head/helmet/space/emergency,
-/obj/item/clothing/head/helmet/space/emergency,
-/obj/item/clothing/head/helmet/space/emergency,
 /turf/simulated/floor/exoplanet/concrete,
 /area/map_template/colony/mineralprocessing)
 "mb" = (
@@ -7927,11 +7924,9 @@
 	dir = 1;
 	icon_state = "railing0-1"
 	},
-/obj/structure/closet/emcloset/legacy,
+/obj/structure/closet/emcloset,
 /obj/item/clothing/suit/space/emergency,
 /obj/item/clothing/suit/space/emergency,
-/obj/item/clothing/suit/space/emergency,
-/obj/item/clothing/head/helmet/space/emergency,
 /obj/item/clothing/head/helmet/space/emergency,
 /obj/item/clothing/head/helmet/space/emergency,
 /turf/simulated/floor/tiled/techfloor/grid,
@@ -8328,7 +8323,7 @@
 /obj/item/weapon/cell/super,
 /obj/item/weapon/cell/super,
 /obj/item/weapon/cell/super,
-/obj/item/weapon/mining_scanner,
+/obj/item/device/scanner/mining,
 /obj/item/weapon/storage/box/greenglowsticks,
 /obj/item/weapon/storage/box/greenglowsticks,
 /obj/item/weapon/storage/box/greenglowsticks,

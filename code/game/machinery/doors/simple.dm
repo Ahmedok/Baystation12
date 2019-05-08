@@ -8,7 +8,7 @@
 	hitsound = 'sound/weapons/genhit.ogg'
 	var/datum/lock/lock
 	var/initial_lock_value //for mapping purposes. Basically if this value is set, it sets the lock to this value.
-
+	autoset_access = FALSE // Doesn't even use access
 
 /obj/machinery/door/unpowered/simple/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
 	TemperatureAct(exposed_temperature)
@@ -222,6 +222,18 @@
 
 /obj/machinery/door/unpowered/simple/wood/New(var/newloc,var/material_name,var/complexity)
 	..(newloc, MATERIAL_WOOD, complexity)
+
+/obj/machinery/door/unpowered/simple/mahogany/New(var/newloc,var/material_name,var/complexity)
+	..(newloc, MATERIAL_MAHOGANY, complexity)
+
+/obj/machinery/door/unpowered/simple/maple/New(var/newloc,var/material_name,var/complexity)
+	..(newloc, MATERIAL_MAPLE, complexity)
+
+/obj/machinery/door/unpowered/simple/ebony/New(var/newloc,var/material_name,var/complexity)
+	..(newloc, MATERIAL_EBONY, complexity)
+
+/obj/machinery/door/unpowered/simple/walnut/New(var/newloc,var/material_name,var/complexity)
+	..(newloc, MATERIAL_WALNUT, complexity)
 
 /obj/machinery/door/unpowered/simple/wood/saloon
 	icon_base = "saloon"

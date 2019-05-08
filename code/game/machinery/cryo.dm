@@ -57,6 +57,14 @@
 			node = target
 			break
 
+/obj/machinery/atmospherics/unary/cryo_cell/examine(mob/user)
+	. = ..()
+	if (. && user.Adjacent(src))
+		if (beaker)
+			to_chat(user, "It is loaded with a beaker.")
+		if (occupant)
+			occupant.examine(user)
+
 /obj/machinery/atmospherics/unary/cryo_cell/Process()
 	..()
 	if(!node)
@@ -135,7 +143,7 @@
 
 	data["cellTemperature"] = round(air_contents.temperature)
 	data["cellTemperatureStatus"] = "good"
-	if(air_contents.temperature > T0C) // if greater than 273.15 kelvin (0 celcius)
+	if(air_contents.temperature > T0C) // if greater than 273.15 kelvin (0 celsius)
 		data["cellTemperatureStatus"] = "bad"
 	else if(air_contents.temperature > 225)
 		data["cellTemperatureStatus"] = "average"
@@ -247,13 +255,7 @@
 		if(occupant.stat == DEAD)
 			return
 		occupant.set_stat(UNCONSCIOUS)
-		if(occupant.bodytemperature < 225)
-			if (occupant.getToxLoss())
-				occupant.adjustToxLoss(max(-1, -10/occupant.getToxLoss()))
-			var/heal_brute = occupant.getBruteLoss() ? min(1, 20/occupant.getBruteLoss()) : 0
-			var/heal_fire = occupant.getFireLoss	() ? min(1, 20/occupant.getFireLoss()) : 0
-			occupant.heal_organ_damage(heal_brute,heal_fire)
-		var/has_cryo_medicine = occupant.reagents.has_any_reagent(list(/datum/reagent/cryoxadone, /datum/reagent/clonexadone)) >= REM
+		var/has_cryo_medicine = occupant.reagents.has_any_reagent(list(/datum/reagent/cryoxadone, /datum/reagent/clonexadone, /datum/reagent/nanitefluid)) >= REM
 		if(beaker && !has_cryo_medicine)
 			beaker.reagents.trans_to_mob(occupant, REM, CHEM_BLOOD)
 
@@ -285,7 +287,9 @@
 	current_heat_capacity = initial(current_heat_capacity)
 	update_use_power(POWER_USE_IDLE)
 	update_icon()
+	SetName(initial(name))
 	return
+
 /obj/machinery/atmospherics/unary/cryo_cell/proc/put_mob(mob/living/carbon/M as mob)
 	if (stat & (NOPOWER|BROKEN))
 		to_chat(usr, "<span class='warning'>The cryo cell is not functioning.</span>")
@@ -315,6 +319,7 @@
 	update_use_power(POWER_USE_ACTIVE)
 	add_fingerprint(usr)
 	update_icon()
+	SetName("[name] ([occupant])")
 	return 1
 
 	//Like grab-putting, but for mouse-dropping.

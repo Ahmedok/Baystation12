@@ -3,7 +3,7 @@
 	desc = "A little medical robot. He looks somewhat underwhelmed."
 	icon = 'icons/mob/bot/medibot.dmi'
 	icon_state = "medibot0"
-	req_one_access = list(access_medical, access_robotics)
+	req_access = list(list(access_medical, access_robotics))
 	botcard_access = list(access_medical, access_morgue, access_surgery, access_chemistry, access_virology)
 	var/skin = null //Set to "tox", "ointment" or "o2" for the other two firstaid kits.
 
@@ -207,7 +207,7 @@
 
 	new /obj/item/weapon/storage/firstaid(Tsec)
 	new /obj/item/device/assembly/prox_sensor(Tsec)
-	new /obj/item/device/healthanalyzer(Tsec)
+	new /obj/item/device/scanner/health(Tsec)
 	if (prob(50))
 		new /obj/item/robot_parts/l_arm(Tsec)
 
@@ -296,7 +296,7 @@
 	else
 		switch(build_step)
 			if(0)
-				if(istype(W, /obj/item/device/healthanalyzer))
+				if(istype(W, /obj/item/device/scanner/health))
 					qdel(W)
 					build_step++
 					to_chat(user, "<span class='notice'>You add the health sensor to [src].</span>")

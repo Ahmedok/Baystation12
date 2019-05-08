@@ -115,13 +115,13 @@
 		/obj/item/device/flashlight,
 		/obj/item/stack/cable_coil,
 		/obj/item/device/t_scanner,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/engineering,
 		/obj/item/inducer/,
 		/obj/item/device/robotanalyzer,
 		/obj/item/weapon/material/minihoe,
 		/obj/item/weapon/material/hatchet,
-		/obj/item/device/analyzer/plant_analyzer,
+		/obj/item/device/scanner/plant,
 		/obj/item/taperoll,
 		/obj/item/weapon/extinguisher/mini,
 		/obj/item/weapon/marshalling_wand,
@@ -159,7 +159,7 @@
 	icon_state = "medicalbelt"
 	item_state = "medical"
 	can_hold = list(
-		/obj/item/device/healthanalyzer,
+		/obj/item/device/scanner/health,
 		/obj/item/weapon/reagent_containers/dropper,
 		/obj/item/weapon/reagent_containers/glass/beaker,
 		/obj/item/weapon/reagent_containers/glass/bottle,
@@ -267,7 +267,7 @@
 		/obj/item/device/taperecorder,
 		/obj/item/weapon/folder,
 		/obj/item/weapon/paper,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/modular_computer/tablet,
 		/obj/item/device/flashlight,
 		/obj/item/modular_computer/pda,
@@ -323,7 +323,7 @@
 		/obj/item/device/taperecorder,
 		/obj/item/weapon/folder,
 		/obj/item/weapon/paper,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/modular_computer/tablet,
 		/obj/item/device/flash,
 		/obj/item/device/flashlight,
@@ -389,9 +389,9 @@
 		/obj/item/device/flashlight,
 		/obj/item/device/radio,
 		/obj/item/device/gps,
-		/obj/item/weapon/mining_scanner,
-		/obj/item/device/slime_scanner,
-		/obj/item/device/analyzer/plant_analyzer,
+		/obj/item/device/scanner/mining,
+		/obj/item/device/scanner/xenobio,
+		/obj/item/device/scanner/plant,
 		/obj/item/weapon/folder,
 		/obj/item/weapon/paper,
 		/obj/item/weapon/pen,
@@ -400,7 +400,7 @@
 		/obj/item/weapon/pinpointer/radio,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape,
-		/obj/item/device/analyzer
+		/obj/item/device/scanner/gas
 		)
 	can_holster = list(/obj/item/weapon/material/hatchet/machete)
 	sound_in = 'sound/effects/holster/sheathin.ogg'

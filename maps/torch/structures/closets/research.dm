@@ -60,12 +60,12 @@
 		/obj/item/clothing/shoes/white,
 		/obj/item/device/radio/headset/torchnanotrasen,
 		/obj/item/clothing/mask/gas,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/weapon/folder,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
@@ -78,7 +78,7 @@
 
 /obj/structure/closet/secure_closet/scientist_torch
 	name = "researcher's locker"
-	req_one_access = list(access_research)
+	req_access = list(access_research)
 	closet_appearance = /decl/closet_appearance/secure_closet/torch/science
 
 /obj/structure/closet/secure_closet/scientist_torch/WillContain()
@@ -90,12 +90,12 @@
 		/obj/item/device/radio/headset/torchnanotrasen,
 		/obj/item/clothing/mask/gas/half,
 		/obj/item/weapon/tank/emergency/oxygen/engi,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/weapon/folder,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
@@ -119,7 +119,7 @@
 		/obj/item/clothing/accessory/armband/whitered,
 		/obj/item/device/radio/headset/torchnanotrasen,
 		/obj/item/clothing/mask/gas/half,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/weapon/folder,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
@@ -145,7 +145,7 @@
 
 /obj/structure/closet/secure_closet/ec_scientist
 	name = "scientist locker"
-	req_one_access = list(access_research)
+	req_access = list(access_research)
 	closet_appearance = /decl/closet_appearance/secure_closet/torch/science
 
 /obj/structure/closet/secure_closet/ec_scientist/WillContain()
@@ -154,18 +154,18 @@
 		/obj/item/device/radio/headset/torchnanotrasen,
 		/obj/item/clothing/mask/gas/half,
 		/obj/item/weapon/tank/emergency/oxygen/engi,
-		/obj/item/weapon/clipboard,
+		/obj/item/weapon/material/clipboard,
 		/obj/item/weapon/folder,
 		/obj/item/device/taperecorder,
 		/obj/item/device/tape/random = 3,
 		/obj/item/device/camera,
-		/obj/item/device/analyzer,
+		/obj/item/device/scanner/gas,
 		/obj/item/taperoll/research,
 		/obj/item/clothing/gloves/latex,
 		/obj/item/clothing/glasses/science,
 		/obj/item/weapon/storage/belt/general,
-		/obj/item/device/slime_scanner,
-		/obj/item/device/analyzer/plant_analyzer,
+		/obj/item/device/scanner/xenobio,
+		/obj/item/device/scanner/plant,
 		new /datum/atom_creator/weighted(list(/obj/item/weapon/storage/backpack/, /obj/item/weapon/storage/backpack/satchel/grey)),
 		new /datum/atom_creator/simple(/obj/item/weapon/storage/backpack/messenger/, 50)
 	)

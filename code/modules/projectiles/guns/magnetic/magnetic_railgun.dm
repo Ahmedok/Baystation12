@@ -14,6 +14,7 @@
 	slot_flags = SLOT_BACK
 	loaded = /obj/item/weapon/rcd_ammo/large // ~30 shots
 	combustion = 1
+	bulk = GUN_BULK_RIFLE + 3
 
 	var/initial_cell_type = /obj/item/weapon/cell/hyper
 	var/initial_capacitor_type = /obj/item/weapon/stock_parts/capacitor/adv // 6-8 shots
@@ -178,6 +179,8 @@
 	item_state = "skrell_rifle"
 	one_hand_penalty = 3
 	fire_delay = 10
+	slowdown_held = 1
+	slowdown_worn = 1
 	removable_components = FALSE
 	initial_cell_type = /obj/item/weapon/cell/hyper
 	initial_capacitor_type = /obj/item/weapon/stock_parts/capacitor/adv

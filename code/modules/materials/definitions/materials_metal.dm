@@ -109,29 +109,40 @@
 	icon_colour = COLOR_STEEL
 	hitsound = 'sound/weapons/smash.ogg'
 	chem_products = list(
-				/datum/reagent/iron = 15,
-				/datum/reagent/carbon = 5
+				/datum/reagent/iron = 19.6,
+				/datum/reagent/carbon = 0.4
 				)
-	alloy_materials = list(MATERIAL_HEMATITE = 1875, MATERIAL_GRAPHENE = 1875)
+	alloy_materials = list(MATERIAL_HEMATITE = 1875, MATERIAL_GRAPHITE = 1875)
 	alloy_product = TRUE
 	sale_price = 1
 	ore_smelts_to = MATERIAL_STEEL
 	construction_difficulty = 1
+
+/material/steel/holographic
+	name = "holo" + MATERIAL_STEEL
+	display_name = MATERIAL_STEEL
+	stack_type = null
+	shard_type = SHARD_NONE
+	conductive = 0
+	alloy_materials = null
+	alloy_product = FALSE
+	sale_price = null
+	hidden_from_codex = TRUE
 
 /material/aluminium
 	name = MATERIAL_ALUMINIUM
 	lore_text = "A low-density ductile metal with a silvery-white sheen."
 	stack_type = /obj/item/stack/material/aluminium
 	chem_products = list(
-				/datum/reagent/aluminum = 20
+				/datum/reagent/aluminium = 20
 				)
 	integrity = 125
+	weight = 18
 	brute_armor = 3
 	icon_base = "solid"
 	icon_reinf = "reinf_over"
-	icon_colour = "#c9c9c9"
+	icon_colour = "#cccdcc"
 	hitsound = 'sound/weapons/smash.ogg'
-	construction_difficulty = 0.5
 	sale_price = 1
 
 /material/aluminium/holographic
@@ -145,26 +156,15 @@
 	sale_price = null
 	hidden_from_codex = TRUE
 
-/material/steel/holographic
-	name = "holo" + MATERIAL_STEEL
-	display_name = MATERIAL_STEEL
-	stack_type = null
-	shard_type = SHARD_NONE
-	conductive = 0
-	alloy_materials = null
-	alloy_product = FALSE
-	sale_price = null
-	hidden_from_codex = TRUE
-
 /material/plasteel
 	name = MATERIAL_PLASTEEL
-	lore_text = "When regular high-tensile steel isn't tough enough to get the job done, the smart consumer turns to frankly absurd alloys of steel and platinum."
+	lore_text = "An alloy of steel and platinum. When regular high-tensile steel isn't tough enough to get the job done, the smart consumer turns to frankly absurd alloys of steel and platinum."
 	stack_type = /obj/item/stack/material/plasteel
 	integrity = 400
 	melting_point = 6000
 	icon_base = "solid"
 	icon_reinf = "reinf_over"
-	icon_colour = "#777777"
+	icon_colour = "#a8a9b2"
 	explosion_resistance = 25
 	brute_armor = 6
 	burn_armor = 10
@@ -186,7 +186,7 @@
 	integrity = 200
 	melting_point = 3000
 	weight = 18
-	stack_type = null
+	stack_type = /obj/item/stack/material/titanium
 	icon_base = "metal"
 	door_icon_base = "metal"
 	icon_colour = "#d1e6e3"
@@ -324,7 +324,7 @@
 	hidden_from_codex = TRUE
 
 /material/aliumium
-	name = MATERIAL_ALIUMIUM
+	name = MATERIAL_ALIENALLOY
 	display_name = "alien alloy"
 	stack_type = null
 	icon_base = "jaggy"
@@ -362,3 +362,15 @@
 	ore_name = "hematite"
 	ore_icon_overlay = "lump"
 	sale_price = 1
+
+/material/rutile
+	name = MATERIAL_RUTILE
+	stack_type = null
+	icon_colour = "#d8ad97"
+	ore_smelts_to = MATERIAL_TITANIUM
+	ore_result_amount = 5
+	ore_spread_chance = 15
+	ore_scan_icon = "mineral_uncommon"
+	ore_name = "rutile"
+	ore_icon_overlay = "lump"
+	sale_price = 2

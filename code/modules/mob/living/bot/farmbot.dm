@@ -10,7 +10,7 @@
 	icon_state = "farmbot0"
 	health = 50
 	maxHealth = 50
-	req_one_access = list(access_hydroponics, access_robotics)
+	req_access = list(list(access_hydroponics, access_robotics))
 
 	var/action = "" // Used to update icon
 	var/waters_trays = 1
@@ -231,7 +231,7 @@
 	new /obj/item/weapon/material/minihoe(Tsec)
 	new /obj/item/weapon/reagent_containers/glass/bucket(Tsec)
 	new /obj/item/device/assembly/prox_sensor(Tsec)
-	new /obj/item/device/analyzer/plant_analyzer(Tsec)
+	new /obj/item/device/scanner/plant(Tsec)
 
 	if(tank)
 		tank.forceMove(Tsec)
@@ -312,7 +312,7 @@
 
 /obj/item/weapon/farmbot_arm_assembly/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
-	if((istype(W, /obj/item/device/analyzer/plant_analyzer)) && (build_step == 0))
+	if((istype(W, /obj/item/device/scanner/plant)) && (build_step == 0))
 		build_step++
 		to_chat(user, "You add the plant analyzer to [src].")
 		SetName("farmbot assembly")

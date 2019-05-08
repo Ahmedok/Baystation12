@@ -91,6 +91,11 @@ SUBSYSTEM_DEF(jobs)
 		if(LAZYLEN(submap_job_datums))
 			job_lists_by_map_name[arch.descriptor] = list("jobs" = submap_job_datums, "default_to_hidden" = TRUE)
 
+	// Update global map blacklists and whitelists.
+	for(var/mappath in GLOB.all_maps)
+		var/datum/map/M = GLOB.all_maps[mappath]
+		M.setup_job_lists()
+
 	// Update valid job titles.
 	titles_to_datums = list()
 	types_to_datums = list()
@@ -103,7 +108,9 @@ SUBSYSTEM_DEF(jobs)
 			for(var/alt_title in job.alt_titles)
 				titles_to_datums[alt_title] = job
 			if(job.department_flag)
-				LAZYDISTINCTADD(positions_by_department["[job.department_flag]"], job.title)
+				for (var/I in 1 to GLOB.bitflags.len)
+					if(job.department_flag & GLOB.bitflags[I])
+						LAZYDISTINCTADD(positions_by_department["[GLOB.bitflags[I]]"], job.title)
 
 	// Set up syndicate phrases.
 	syndicate_code_phrase = generate_code_phrase()
@@ -453,13 +460,13 @@ SUBSYSTEM_DEF(jobs)
 		// EMAIL GENERATION
 		if(rank != "Robot" && rank != "AI")		//These guys get their emails later.
 			var/domain
-			var/desired_name
-			if(H.char_branch && H.char_branch.email_domain)
-				domain = H.char_branch.email_domain
+			if(H.char_branch)
+				if(H.char_branch.email_domain)
+					domain = H.char_branch.email_domain
 			else
 				domain = "freemail.net"
-			desired_name = H.real_name
-			ntnet_global.create_email(H, desired_name, domain)
+			if(domain)
+				ntnet_global.create_email(H, H.real_name, domain)
 		// END EMAIL GENERATION
 
 		job.equip(H, H.mind ? H.mind.role_alt_title : "", H.char_branch, H.char_rank)
@@ -478,6 +485,7 @@ SUBSYSTEM_DEF(jobs)
 		else
 			var/datum/spawnpoint/spawnpoint = job.get_spawnpoint(H.client)
 			H.forceMove(pick(spawnpoint.turfs))
+			spawnpoint.after_join(H)
 
 		// Moving wheelchair if they have one
 		if(H.buckled && istype(H.buckled, /obj/structure/bed/chair/wheelchair))
@@ -504,7 +512,7 @@ SUBSYSTEM_DEF(jobs)
 
 		switch(rank)
 			if("Robot")
-				return H.Robotize()
+				return H.Robotize(SSrobots.get_mob_type_by_title(alt_title ? alt_title : job.title))
 			if("AI")
 				return H
 			if("Captain")

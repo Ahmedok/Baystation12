@@ -85,7 +85,8 @@
 	var/w_items = 0			//the combined w_class of all the items in the cistern
 	var/mob/living/swirlie = null	//the mob being given a swirlie
 
-/obj/structure/hygiene/toilet/New()
+/obj/structure/hygiene/toilet/Initialize()
+	. = ..()
 	open = round(rand(0, 1))
 	update_icon()
 
@@ -221,7 +222,7 @@
 			G.clean_blood()
 
 /obj/structure/hygiene/shower/attackby(obj/item/I as obj, var/mob/user)
-	if(istype(I, /obj/item/device/analyzer))
+	if(istype(I, /obj/item/device/scanner/gas))
 		to_chat(user, "<span class='notice'>The water temperature seems to be [watertemp].</span>")
 		return
 

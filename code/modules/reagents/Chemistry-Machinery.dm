@@ -9,6 +9,7 @@
 	anchored = 1
 	icon = 'icons/obj/chemical.dmi'
 	icon_state = "mixer0"
+	layer = BELOW_OBJ_LAYER
 	idle_power_usage = 20
 	clicksound = "button"
 	clickvol = 20
@@ -74,7 +75,7 @@
 			loaded_pill_bottle.dropInto(loc)
 			loaded_pill_bottle = null
 	else if(href_list["close"])
-		show_browser(user, null, "window=chemmaster")
+		show_browser(user, null, "window=chem_master")
 		user.unset_machine()
 		return
 

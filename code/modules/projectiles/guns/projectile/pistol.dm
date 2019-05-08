@@ -4,7 +4,9 @@
 	caliber = CALIBER_PISTOL
 	magazine_type = /obj/item/ammo_magazine/pistol
 	allowed_magazines = /obj/item/ammo_magazine/pistol
+	accuracy_power = 7
 	var/empty_icon = TRUE  //If it should change icon when empty
+	var/ammo_indicator = FALSE
 
 /obj/item/weapon/gun/projectile/pistol/on_update_icon()
 	..()
@@ -13,7 +15,15 @@
 			icon_state = initial(icon_state)
 		else
 			icon_state = "[initial(icon_state)]-e"
-
+	if(ammo_indicator)
+		if(!ammo_magazine || !LAZYLEN(ammo_magazine.stored_ammo))
+			overlays += image(icon, "ammo_bad")
+		else if(LAZYLEN(ammo_magazine.stored_ammo) <= 0.5 * ammo_magazine.max_ammo)
+			overlays += image(icon, "ammo_warn")
+			return
+		else
+			overlays += image(icon, "ammo_ok")
+	
 /obj/item/weapon/gun/projectile/pistol/military
 	name = "military pistol"
 	desc = "The Hephaestus Industries P20 - a mass produced kinetic sidearm in widespread service with the SCGDF."
@@ -24,6 +34,7 @@
 	safety_icon = "safety"
 	origin_tech = list(TECH_COMBAT = 3, TECH_MATERIAL = 2)
 	fire_delay = 7
+	ammo_indicator = TRUE
 
 /obj/item/weapon/gun/projectile/pistol/military/alt
 	desc = "The HelTek Optimus, best known as the standard-issue sidearm for the ICCG Navy."
@@ -41,7 +52,7 @@
 	safety_icon = "safety"
 	magazine_type = /obj/item/ammo_magazine/pistol/rubber
 	accuracy = -1
-	fire_delay = 5
+	fire_delay = 6
 	origin_tech = list(TECH_COMBAT = 2, TECH_MATERIAL = 2)
 
 /obj/item/weapon/gun/projectile/pistol/sec/lethal
@@ -62,6 +73,10 @@
 	allowed_magazines = /obj/item/ammo_magazine/magnum
 	mag_insert_sound = 'sound/weapons/guns/interaction/hpistol_magin.ogg'
 	mag_remove_sound = 'sound/weapons/guns/interaction/hpistol_magout.ogg'
+	accuracy = 2
+	one_hand_penalty = 2
+	bulk = 3
+	ammo_indicator = TRUE
 
 /obj/item/weapon/gun/projectile/pistol/throwback
 	name = "pistol"
@@ -69,14 +84,17 @@
 	icon = 'icons/obj/guns/pistol_throwback.dmi'
 	icon_state = "pistol1"
 	magazine_type = /obj/item/ammo_magazine/pistol/throwback
-	accuracy = -2
-	fire_delay = 5
+	accuracy_power = 5
+	one_hand_penalty = 2
+	fire_delay = 7
+	caliber = CALIBER_PISTOL_ANTIQUE
 	origin_tech = list(TECH_COMBAT = 2, TECH_MATERIAL = 2)
 	var/base_icon = "pistol1"
 
 /obj/item/weapon/gun/projectile/pistol/throwback/Initialize()
 	. = ..()
 	base_icon = "pistol[rand(1,4)]"
+	update_icon()
 
 /obj/item/weapon/gun/projectile/pistol/throwback/on_update_icon()
 	..()
@@ -93,8 +111,9 @@
 	max_shells = 8
 	caliber = CALIBER_GYROJET
 	origin_tech = list(TECH_COMBAT = 3)
-	ammo_type = /obj/item/ammo_casing/gyrojet
 	magazine_type = /obj/item/ammo_magazine/gyrojet
+	allowed_magazines = /obj/item/ammo_magazine/gyrojet
+	handle_casings = CLEAR_CASINGS	//the projectile is the casing
 	fire_delay = 25
 	auto_eject = 1
 	auto_eject_sound = 'sound/weapons/smg_empty_alarm.ogg'
@@ -118,7 +137,7 @@
 	w_class = ITEM_SIZE_SMALL
 	caliber = CALIBER_PISTOL_SMALL
 	silenced = 0
-	fire_delay = 1
+	fire_delay = 4
 	origin_tech = list(TECH_COMBAT = 2, TECH_MATERIAL = 2, TECH_ILLEGAL = 2)
 	magazine_type = /obj/item/ammo_magazine/pistol/small
 	allowed_magazines = /obj/item/ammo_magazine/pistol/small
