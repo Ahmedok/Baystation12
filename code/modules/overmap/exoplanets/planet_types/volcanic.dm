@@ -8,6 +8,9 @@
 	map_generators = list(/datum/random_map/automata/cave_system/mountains/volcanic, /datum/random_map/noise/exoplanet/volcanic, /datum/random_map/noise/ore/filthy_rich)
 	ruin_tags_blacklist = RUIN_HABITAT|RUIN_WATER
 
+/obj/effect/overmap/sector/exoplanet/volcanic/generate_habitability()
+	return HABITABILITY_BAD
+	
 /obj/effect/overmap/sector/exoplanet/volcanic/generate_atmosphere()
 	..()
 	if(atmosphere)
@@ -106,6 +109,7 @@
 		START_PROCESSING(SSobj, src)
 
 /turf/simulated/floor/exoplanet/lava/Exited(atom/movable/AM)
+	. = ..()
 	LAZYREMOVE(victims, weakref(AM))
 
 /turf/simulated/floor/exoplanet/lava/Process()

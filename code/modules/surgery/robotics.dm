@@ -202,6 +202,10 @@
 			var/obj/item/weapon/weldingtool/welder = tool
 			if(!welder.isOn() || !welder.remove_fuel(1,user))
 				return FALSE
+		if(istype(tool, /obj/item/weapon/gun/energy/plasmacutter))
+			var/obj/item/weapon/gun/energy/plasmacutter/cutter = tool
+			if(!cutter.slice(user))
+				return FALSE
 		return TRUE
 	return FALSE
 
@@ -294,10 +298,9 @@
 		else
 			var/obj/item/stack/cable_coil/C = tool
 			if(istype(C))
-				if(C.get_amount() < 3)
+				if(!C.use(3))
 					to_chat(user, SPAN_WARNING("You need three or more cable pieces to repair this damage."))
 				else
-					C.use(3)
 					return TRUE
 	return FALSE
 
@@ -496,7 +499,7 @@
 			to_chat(user, SPAN_WARNING("You're pretty sure [target.species.name_plural] don't normally have a brain."))
 		else if(target.internal_organs[BP_BRAIN])
 			to_chat(user, SPAN_WARNING("Your subject already has a brain."))
-		else 
+		else
 			return TRUE
 	return FALSE
 

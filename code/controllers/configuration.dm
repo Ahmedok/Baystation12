@@ -68,7 +68,6 @@ var/list/gamemode_cache = list()
 	var/mod_job_tempban_max = 1440
 	var/load_jobs_from_txt = 0
 	var/jobs_have_minimal_access = 0	//determines whether jobs use minimal access or expanded access.
-	var/use_cortical_stacks = 0
 
 	var/cult_ghostwriter = 1               //Allows ghosts to write in blood in cult rounds...
 	var/cult_ghostwriter_req_cultists = 10 //...so long as this many cultists are active.
@@ -128,8 +127,13 @@ var/list/gamemode_cache = list()
 
 	//Used for modifying movement speed for mobs.
 	//Unversal modifiers
-	var/run_speed = 2
-	var/walk_speed = 1
+	var/run_delay = 2
+	var/walk_delay = 4
+	var/creep_delay = 6
+	var/minimum_sprint_cost = 0.8
+	var/skill_sprint_cost_range = 0.8
+	var/minimum_stamina_recovery = 1
+	var/maximum_stamina_recovery = 3
 
 	//Mob specific modifiers. NOTE: These will affect different mob types in different ways
 	var/human_delay = 0
@@ -505,9 +509,6 @@ var/list/gamemode_cache = list()
 				if("protect_roles_from_antagonist")
 					config.protect_roles_from_antagonist = 1
 
-				if("use_cortical_stacks")
-					config.use_cortical_stacks = 1
-
 				if ("probability")
 					var/prob_pos = findtext(value, " ")
 					var/prob_name = null
@@ -781,10 +782,20 @@ var/list/gamemode_cache = list()
 				if("limbs_can_break")
 					config.limbs_can_break = value
 
-				if("run_speed")
-					config.run_speed = value
-				if("walk_speed")
-					config.walk_speed = value
+				if("run_delay")
+					config.run_delay = value
+				if("walk_delay")
+					config.walk_delay = value
+				if("creep_delay")
+					config.creep_delay = value
+				if("minimum_sprint_cost")
+					config.minimum_sprint_cost = value
+				if("skill_sprint_cost_range")
+					config.skill_sprint_cost_range = value
+				if("minimum_stamina_recovery")
+					config.minimum_stamina_recovery = value
+				if("maximum_stamina_recovery")
+					config.maximum_stamina_recovery = value
 
 				if("human_delay")
 					config.human_delay = value

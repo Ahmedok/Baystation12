@@ -66,10 +66,8 @@
 	flesh_color = "#808d11"
 
 	reagent_tag = IS_VOX
-
-	inherent_verbs = list(
-		/mob/living/carbon/human/proc/leap
-		)
+	maneuvers = list(/decl/maneuver/leap/grab)
+	standing_jump_range = 5
 
 	override_limb_types = list(
 		BP_GROIN = /obj/item/organ/external/groin/vox
@@ -83,7 +81,7 @@
 		BP_KIDNEYS =    /obj/item/organ/internal/kidneys/vox,
 		BP_BRAIN =      /obj/item/organ/internal/brain,
 		BP_EYES =       /obj/item/organ/internal/eyes/vox,
-		BP_STACK =      /obj/item/organ/internal/stack/vox,
+		BP_STACK =      /obj/item/organ/internal/voxstack,
 		BP_HINDTONGUE = /obj/item/organ/internal/hindtongue
 		)
 
@@ -121,14 +119,11 @@
 	if(istype(H.get_equipped_item(slot_back), /obj/item/weapon/storage/backpack))
 		H.equip_to_slot_or_del(new /obj/item/weapon/tank/nitrogen(H), slot_r_hand)
 		H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/vox(H.back), slot_in_backpack)
-		H.internal = H.r_hand
+		H.set_internals(H.r_hand)
 	else
 		H.equip_to_slot_or_del(new /obj/item/weapon/tank/nitrogen(H), slot_back)
 		H.equip_to_slot_or_del(new /obj/item/weapon/storage/box/vox(H), slot_r_hand)
-		H.internal = H.back
-
-	if(H.internals)
-		H.internals.icon_state = "internal1"
+		H.set_internals(H.back)
 
 /datum/species/vox/disfigure_msg(var/mob/living/carbon/human/H)
 	var/datum/gender/T = gender_datums[H.get_gender()]

@@ -154,7 +154,7 @@ var/const/NO_EMAG_ACT = -50
 /obj/item/weapon/card/emag/examine(mob/user)
 	. = ..()
 	if(. && user.skill_check(SKILL_DEVICES,SKILL_ADEPT))
-		to_chat(user, SPAN_WARNING("This ID card has some non-standard modifications commonly used to gain illicit access to computer systems."))
+		to_chat(user, SPAN_WARNING("This ID card has some form of non-standard modifications."))
 
 /obj/item/weapon/card/id
 	name = "identification card"
@@ -163,7 +163,7 @@ var/const/NO_EMAG_ACT = -50
 	item_state = "card-id"
 	slot_flags = SLOT_ID
 
-	var/access = list()
+	var/list/access = list()
 	var/registered_name = "Unknown" // The name registered_name on the card
 	var/associated_account_number = 0
 	var/list/associated_email_login = list("login" = "", "password" = "")
@@ -405,6 +405,14 @@ var/const/NO_EMAG_ACT = -50
 	..()
 	access |= get_all_station_access()
 
+/obj/item/weapon/card/id/foundation_civilian
+	name = "operant registration card"
+	desc = "A registration card in a faux-leather case. It marks the named individual as a registered, law-abiding psionic."
+	icon_state = "warrantcard_civ"
+
+/obj/item/weapon/card/id/foundation_civilian/on_update_icon()
+	return
+
 /obj/item/weapon/card/id/foundation
 	name = "\improper Foundation warrant card"
 	desc = "A warrant card in a handsome leather case."
@@ -578,3 +586,16 @@ var/const/NO_EMAG_ACT = -50
 	access = list(access_merchant)
 	color = COLOR_OFF_WHITE
 	detail_color = COLOR_BEIGE
+
+/obj/item/weapon/card/id/ascent
+	name = "alien chip"
+	icon = 'icons/obj/ascent.dmi'
+	icon_state = "access_card"
+	desc = "A slender, complex chip of alien circuitry."
+	access = list(access_ascent)
+
+/obj/item/weapon/card/id/ascent/on_update_icon()
+	return
+
+/obj/item/weapon/card/id/ascent/prevent_tracking()
+	return TRUE 

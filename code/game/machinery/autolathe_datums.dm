@@ -323,6 +323,11 @@ var/const/EXTRA_COST_FACTOR = 1.25
 	path = /obj/item/weapon/implanter
 	category = "Medical"
 
+/datum/autolathe/recipe/pill_bottle
+	name = "pill bottle"
+	path = /obj/item/weapon/storage/pill_bottle
+	category = "Medical"
+
 /datum/autolathe/recipe/syringegun_ammo
 	name = "syringe gun cartridge"
 	path = /obj/item/weapon/syringe_cartridge
@@ -359,6 +364,41 @@ var/const/EXTRA_COST_FACTOR = 1.25
 /datum/autolathe/recipe/consolescreen
 	name = "console screen"
 	path = /obj/item/weapon/stock_parts/console_screen
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/keyboard
+	name = "input controller"
+	path = /obj/item/weapon/stock_parts/keyboard
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/tesla_component
+	name = "tesla link"
+	path = /obj/item/weapon/stock_parts/power/apc/buildable
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/battery_backup_crap
+	name = "battery backup (weak)"
+	path = /obj/item/weapon/stock_parts/power/battery/buildable/crap
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/battery_backup_stock
+	name = "battery backup (standard)"
+	path = /obj/item/weapon/stock_parts/power/battery/buildable/stock
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/battery_backup_turbo
+	name = "battery backup (rapid)"
+	path = /obj/item/weapon/stock_parts/power/battery/buildable/turbo
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/battery_backup_responsive
+	name = "battery backup (responsive)"
+	path = /obj/item/weapon/stock_parts/power/battery/buildable/responsive
+	category = "Devices and Components"
+
+/datum/autolathe/recipe/terminal
+	name = "terminal power connector"
+	path = /obj/item/weapon/stock_parts/power/terminal/buildable
 	category = "Devices and Components"
 
 /datum/autolathe/recipe/igniter

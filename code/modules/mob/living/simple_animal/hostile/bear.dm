@@ -22,7 +22,8 @@
 	health = 60
 	melee_damage_lower = 20
 	melee_damage_upper = 30
-	can_escape = 1
+	melee_damage_flags = DAM_SHARP
+	can_escape = TRUE
 
 	//Space bears aren't affected by atmos.
 	min_gas = null

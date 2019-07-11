@@ -550,11 +550,7 @@ obj/random/closet/spawn_choices()
 	icon_state = "soaprandom"
 
 /obj/random/soap/spawn_choices()
-	return list(/obj/item/weapon/soap = 4,
-				/obj/item/weapon/soap/nanotrasen = 3,
-				/obj/item/weapon/soap/deluxe = 3,
-				/obj/item/weapon/soap/syndie = 1,
-				/obj/item/weapon/soap/gold = 1,
+	return list(/obj/item/weapon/soap = 12,
 				/obj/item/weapon/reagent_containers/glass/rag = 2,
 				/obj/item/weapon/reagent_containers/spray/cleaner = 2,
 				/obj/item/weapon/grenade/chem_grenade/cleaner = 1)
@@ -1054,8 +1050,7 @@ something, make sure it's not in one of the other lists.*/
 				/obj/item/weapon/rig/light/hacker,
 				/obj/item/weapon/rig/light/stealth,
 				/obj/item/weapon/rig/light,
-				/obj/item/weapon/rig/unathi,
-				/obj/item/weapon/rig/unathi/fancy)
+				/obj/item/weapon/rig/unathi)
 
 /obj/random/hostile
 	name = "Random Hostile Mob"

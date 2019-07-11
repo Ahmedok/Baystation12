@@ -1,10 +1,3 @@
-// fun if you want to typecast humans/monkeys/etc without writing long path-filled lines.
-/proc/isxenomorph(A)
-	if(istype(A, /mob/living/carbon/human))
-		var/mob/living/carbon/human/H = A
-		return istype(H.species, /datum/species/xenos)
-	return 0
-
 /proc/issmall(A)
 	if(A && istype(A, /mob/living))
 		var/mob/living/L = A
@@ -411,6 +404,9 @@ proc/is_blind(A)
 			return 1
 	return 0
 
+/mob/proc/welding_eyecheck()
+	return
+
 /proc/broadcast_security_hud_message(var/message, var/broadcast_source)
 	broadcast_hud_message(message, broadcast_source, GLOB.sec_hud_users, /obj/item/clothing/glasses/hud/security)
 
@@ -603,7 +599,8 @@ proc/is_blind(A)
 		client.images -= image
 
 /mob/proc/flash_eyes(intensity = FLASH_PROTECTION_MODERATE, override_blindness_check = FALSE, affect_silicon = FALSE, visual = FALSE, type = /obj/screen/fullscreen/flash)
-	return
+	for(var/mob/M in contents)
+		M.flash_eyes(intensity, override_blindness_check, affect_silicon, visual, type)
 
 /mob/proc/fully_replace_character_name(var/new_name, var/in_depth = TRUE)
 	if(!new_name || new_name == real_name)	return 0

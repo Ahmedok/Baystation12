@@ -14,6 +14,7 @@
 	var/error
 	var/is_edited
 	usage_flags = PROGRAM_ALL
+	category = PROG_OFFICE
 
 /datum/computer_file/program/wordprocessor/proc/open_file(var/filename)
 	var/datum/computer_file/data/F = get_file(filename)
@@ -28,7 +29,7 @@
 		F = create_file(filename, loaded_data, /datum/computer_file/data/text)
 		return !isnull(F)
 	var/datum/computer_file/data/backup = F.clone()
-	var/obj/item/weapon/computer_hardware/hard_drive/HDD = computer.hard_drive
+	var/obj/item/weapon/stock_parts/computer/hard_drive/HDD = computer.hard_drive
 	if(!HDD)
 		return
 	HDD.remove_file(F)
@@ -173,8 +174,8 @@
 	var/datum/computer_file/program/wordprocessor/PRG
 	PRG = program
 
-	var/obj/item/weapon/computer_hardware/hard_drive/HDD
-	var/obj/item/weapon/computer_hardware/hard_drive/portable/RHDD
+	var/obj/item/weapon/stock_parts/computer/hard_drive/HDD
+	var/obj/item/weapon/stock_parts/computer/hard_drive/portable/RHDD
 	if(PRG.error)
 		data["error"] = PRG.error
 	if(PRG.browsing)

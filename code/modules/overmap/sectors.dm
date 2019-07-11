@@ -47,6 +47,9 @@
 //This is called later in the init order by SSshuttle to populate sector objects. Importantly for subtypes, shuttles will be created by then.
 /obj/effect/overmap/proc/populate_sector_objects()
 
+/obj/effect/overmap/proc/get_scan_data(mob/user)
+	return desc
+
 /obj/effect/overmap/proc/get_areas()
 	return get_filtered_areas(list(/proc/area_belongs_to_zlevels = map_z))
 
@@ -117,17 +120,14 @@
 	testing("Building overmap...")
 	world.maxz++
 	GLOB.using_map.overmap_z = world.maxz
-	var/list/turfs = list()
+	var/area/overmap/A = new
 	for (var/square in block(locate(1,1,GLOB.using_map.overmap_z), locate(GLOB.using_map.overmap_size,GLOB.using_map.overmap_size,GLOB.using_map.overmap_z)))
 		var/turf/T = square
 		if(T.x == GLOB.using_map.overmap_size || T.y == GLOB.using_map.overmap_size)
 			T = T.ChangeTurf(/turf/unsimulated/map/edge)
 		else
-			T = T.ChangeTurf(/turf/unsimulated/map/)
-		turfs += T
-
-	var/area/overmap/A = new
-	A.contents.Add(turfs)
+			T = T.ChangeTurf(/turf/unsimulated/map)
+		ChangeArea(T, A)
 
 	GLOB.using_map.sealed_levels |= GLOB.using_map.overmap_z
 

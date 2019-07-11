@@ -7,6 +7,8 @@
 	heat_protection = HEAD
 	armor = list(melee = 40, bullet = 5, laser = 20,energy = 5, bomb = 35, bio = 100, rad = 20)
 	max_heat_protection_temperature = SPACE_SUIT_MAX_HEAT_PROTECTION_TEMPERATURE
+	max_pressure_protection = VOIDSUIT_MAX_PRESSURE
+	min_pressure_protection = 0
 	siemens_coefficient = 0.4
 
 	//Species-specific stuff.
@@ -32,6 +34,7 @@
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/device/suit_cooling_unit)
 	heat_protection = UPPER_TORSO|LOWER_TORSO|LEGS|FEET|ARMS|HANDS
 	max_heat_protection_temperature = SPACE_SUIT_MAX_HEAT_PROTECTION_TEMPERATURE
+	max_pressure_protection = VOIDSUIT_MAX_PRESSURE
 	siemens_coefficient = 0.4
 
 	species_restricted = list(SPECIES_HUMAN, SPECIES_SKRELL, SPECIES_IPC)
@@ -46,7 +49,7 @@
 
 	//Breach thresholds, should ideally be inherited by most (if not all) voidsuits.
 	//With 0.2 resiliance, will reach 10 breach damage after 3 laser carbine blasts or 8 smg hits.
-	breach_threshold = 18
+	breach_threshold = 15
 	can_breach = 1
 
 	//Inbuilt devices.
@@ -271,3 +274,9 @@ else if(##equipment_var) {\
 
 /obj/item/clothing/suit/space/void/attack_self() //sole purpose of existence is to toggle the helmet
 	toggle_helmet()
+
+/obj/item/clothing/suit/space/void/get_mob_overlay(mob/user_mob, slot)
+	var/image/ret = ..()
+	if(tank && slot == slot_back)
+		ret.overlays += tank.get_mob_overlay(user_mob, slot_back_str)
+	return ret

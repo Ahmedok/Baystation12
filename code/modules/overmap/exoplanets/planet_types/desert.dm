@@ -14,7 +14,11 @@
 /obj/effect/overmap/sector/exoplanet/desert/generate_atmosphere()
 	..()
 	if(atmosphere)
-		atmosphere.temperature = T20C + rand(20, 100)
+		var/limit = 1000
+		if(habitability_class <= HABITABILITY_OKAY)
+			var/datum/species/human/H = /datum/species/human
+			limit = initial(H.heat_level_1) - rand(1,10)
+		atmosphere.temperature = min(T20C + rand(20, 100), limit)
 		atmosphere.update_values()
 
 /obj/effect/overmap/sector/exoplanet/desert/adapt_seed(var/datum/seed/S)
@@ -37,6 +41,7 @@
 	large_flora_prob = 0
 	flora_diversity = 4
 	fauna_types = list(/mob/living/simple_animal/thinbug, /mob/living/simple_animal/tindalos, /mob/living/simple_animal/hostile/voxslug)
+	megafauna_types = list(/mob/living/simple_animal/hostile/retaliate/giant_crab)
 
 /datum/random_map/noise/exoplanet/desert/get_additional_spawns(var/value, var/turf/T)
 	..()
@@ -150,12 +155,12 @@
 	else
 		..()
 
-/obj/structure/quicksand/Crossed(AM)
+/obj/structure/quicksand/Crossed(var/atom/movable/AM)
 	if(isliving(AM))
 		var/mob/living/L = AM
-		if (L.can_overcome_gravity())
+		if(L.throwing || L.can_overcome_gravity())
 			return
 		buckle_mob(L)
 		if(!exposed)
 			expose()
-		to_chat(L, "<span class='danger'>You fall into \the [src]!</span>")
+		to_chat(L, SPAN_DANGER("You fall into \the [src]!"))

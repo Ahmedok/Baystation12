@@ -27,8 +27,8 @@
 
 /decl/hierarchy/supply_pack/science/mecha_odysseus
 	name = "Electronics - Circuit (\"Odysseus\")"
-	contains = list(/obj/item/weapon/circuitboard/mecha/odysseus/peripherals, //TEMPORARY due to lack of circuitboard printer,
-					/obj/item/weapon/circuitboard/mecha/odysseus/main) //TEMPORARY due to lack of circuitboard printer
+	contains = list(/obj/item/weapon/stock_parts/circuitboard/mecha/odysseus/peripherals, //TEMPORARY due to lack of circuitboard printer,
+					/obj/item/weapon/stock_parts/circuitboard/mecha/odysseus/main) //TEMPORARY due to lack of circuitboard printer
 	cost = 25
 	containertype = /obj/structure/closet/crate/secure
 	containername = "\improper \"Odysseus\" Circuit crate"
@@ -58,7 +58,7 @@
 
 /decl/hierarchy/supply_pack/science/scanner_module
 	name = "Electronics - Reagent scanner modules"
-	contains = list(/obj/item/weapon/computer_hardware/scanner/reagent = 4)
+	contains = list(/obj/item/weapon/stock_parts/computer/scanner/reagent = 4)
 	cost = 20
 	containername = "reagent scanner module crate"
 

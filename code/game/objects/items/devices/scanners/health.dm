@@ -28,10 +28,8 @@
 
 	var/mob/living/carbon/human/scan_subject = null
 	if (istype(target, /mob/living/carbon/human))
-		user.visible_message("<span class='notice'>\The [user] runs \the [scanner] over \the [target].</span>")
 		scan_subject = target
 	else if (istype(target, /obj/structure/closet/body_bag))
-		user.visible_message("<span class='notice'>\The [user] runs \the [scanner] over \the [target].</span>")
 		var/obj/structure/closet/body_bag/B = target
 		if(!B.opened)
 			var/list/scan_content = list()
@@ -109,9 +107,6 @@
 
 	if(H.stat == DEAD || (H.status_flags & FAKEDEATH))
 		dat += "<span class='scan_warning'>[b]Time of Death:[endb] [time2text(worldtime2stationtime(H.timeofdeath), "hh:mm")]</span>"
-
-	if (H.internal_organs_by_name[BP_STACK])
-		dat += "<span class='scan_notice'>Subject has a neural lace implant.</span>"
 
 	// Pulse rate.
 	var/pulse_result = "normal"
